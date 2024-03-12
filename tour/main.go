@@ -1,27 +1,39 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
+	"tour/handler"
 
 	"github.com/gorilla/mux"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 ) 
 
-func handleReq(res http.ResponseWriter, req *http.Request){
-	fmt.Println(req.Header)
-	res.Write([]byte("test"))
+func initDB() *gorm.DB {
+	dsn := "user=postgres password=super dbname=gorm host=localhost port=5432 sslmode=disable"
+	database, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+
+	if err != nil {
+		print(err)
+		return nil
+	}
+
+	return database
 }
 
-func handlePathReq(res http.ResponseWriter, req *http.Request){
-	path := mux.Vars(req)["path"]	
-	fmt.Println(req.Header)
-	res.Write([]byte(path))
+func startServer(handler *handler.TourHandler) {
+	router := mux.NewRouter().StrictSlash(true)
+	
+	router.HandleFunc("/tour/{id}", handler.Get).Methods("GET")
+
+	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./static")))
+	println("Server starting")
+	log.Fatal(http.ListenAndServe(":8090", router))
 }
 
 func main() {		
 	router := mux.NewRouter()
-	router.HandleFunc("/", handleReq)
-	router.HandleFunc("/{path}", handlePathReq).Methods("GET")
-	log.Fatal(http.ListenAndServe(":8080", router))
+	
+	log.Panicln(http.ListenAndServe(":8080", router))
 }
