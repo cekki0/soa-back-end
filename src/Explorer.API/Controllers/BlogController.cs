@@ -13,14 +13,6 @@ namespace Explorer.API.Controllers
     [Route("api/blog")]
     public class BlogController : BaseApiController
     {
-        private static HttpClient sharedClient = new()
-        {
-            BaseAddress = new Uri("http://localhost:8082");
-    };
-
-        
-
-
         private readonly IBlogService _blogService;
         private readonly IClubMemberManagementService _clubMemberManagmentService;
         private readonly IClubService _clubService;
@@ -109,14 +101,14 @@ namespace Explorer.API.Controllers
         public ActionResult<BlogResponseDto> CreateClubBlog([FromBody] BlogCreateDto blog)
         {
             blog.AuthorId = int.Parse(HttpContext.User.Claims.First(i => i.Type.Equals("id", StringComparison.OrdinalIgnoreCase)).Value);
-            if(blog.ClubId == null)
+            if (blog.ClubId == null)
             {
                 return BadRequest();
             }
             bool touristInClub = false;
-            foreach(int touristId in _clubMemberManagmentService.GetMembers((long)blog.ClubId).Value.Results.Select(member => member.UserId))
+            foreach (int touristId in _clubMemberManagmentService.GetMembers((long)blog.ClubId).Value.Results.Select(member => member.UserId))
             {
-                if(touristId == blog.AuthorId)
+                if (touristId == blog.AuthorId)
                 {
                     touristInClub = true;
                     break;
@@ -124,7 +116,7 @@ namespace Explorer.API.Controllers
             }
             if (!touristInClub)
             {
-                if(_clubService.GetById((int)blog.ClubId).Value.OwnerId != blog.AuthorId)
+                if (_clubService.GetById((int)blog.ClubId).Value.OwnerId != blog.AuthorId)
                 {
                     return BadRequest();
                 }
@@ -144,4 +136,3 @@ namespace Explorer.API.Controllers
     }
 
 }
-
