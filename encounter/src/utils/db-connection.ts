@@ -14,7 +14,7 @@ const client = new Client({
 
 await client.connect().then(() => {
   console.log(
-    `Connected to {${process.env.DB_DATABASE || "explorer"}} database.`
+    `Connected to {${process.env.DB_DATABASE || "explorer-v1"}} database.`
   );
 });
 

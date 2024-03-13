@@ -1,0 +1,281 @@
+{
+  "id": "7f830249-9537-4e77-9272-16ad618fa1bb",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "5",
+  "dialect": "pg",
+  "tables": {
+    "Encounters": {
+      "name": "Encounters",
+      "schema": "encounters",
+      "columns": {
+        "Id": {
+          "name": "Id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "Title": {
+          "name": "Title",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "Description": {
+          "name": "Description",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "Picture": {
+          "name": "Picture",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "Longitude": {
+          "name": "Longitude",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "Latitude": {
+          "name": "Latitude",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "Radius": {
+          "name": "Radius",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "XpReward": {
+          "name": "XpReward",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "Status": {
+          "name": "Status",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "Type": {
+          "name": "Type",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "Instances": {
+          "name": "Instances",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "HiddenLocationEncounters": {
+      "name": "HiddenLocationEncounters",
+      "schema": "encounters",
+      "columns": {
+        "Id": {
+          "name": "Id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "PictureLongitude": {
+          "name": "PictureLongitude",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "PictureLatitude": {
+          "name": "PictureLatitude",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "HiddenLocationEncounters_Id_Encounters_Id_fk": {
+          "name": "HiddenLocationEncounters_Id_Encounters_Id_fk",
+          "tableFrom": "HiddenLocationEncounters",
+          "tableTo": "Encounters",
+          "schemaTo": "encounters",
+          "columnsFrom": [
+            "Id"
+          ],
+          "columnsTo": [
+            "Id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "KeyPointEncounter": {
+      "name": "KeyPointEncounter",
+      "schema": "encounters",
+      "columns": {
+        "Id": {
+          "name": "Id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "KeyPointId": {
+          "name": "KeyPointId",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "KeyPointEncounter_Id_Encounters_Id_fk": {
+          "name": "KeyPointEncounter_Id_Encounters_Id_fk",
+          "tableFrom": "KeyPointEncounter",
+          "tableTo": "Encounters",
+          "schemaTo": "encounters",
+          "columnsFrom": [
+            "Id"
+          ],
+          "columnsTo": [
+            "Id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "MiscEncounters": {
+      "name": "MiscEncounters",
+      "schema": "encounters",
+      "columns": {
+        "Id": {
+          "name": "Id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "ChallengeDone": {
+          "name": "ChallengeDone",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "MiscEncounters_Id_Encounters_Id_fk": {
+          "name": "MiscEncounters_Id_Encounters_Id_fk",
+          "tableFrom": "MiscEncounters",
+          "tableTo": "Encounters",
+          "schemaTo": "encounters",
+          "columnsFrom": [
+            "Id"
+          ],
+          "columnsTo": [
+            "Id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "SocialEncounters": {
+      "name": "SocialEncounters",
+      "schema": "encounters",
+      "columns": {
+        "Id": {
+          "name": "Id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "PeopleNumber": {
+          "name": "PeopleNumber",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "SocialEncounters_Id_Encounters_Id_fk": {
+          "name": "SocialEncounters_Id_Encounters_Id_fk",
+          "tableFrom": "SocialEncounters",
+          "tableTo": "Encounters",
+          "schemaTo": "encounters",
+          "columnsFrom": [
+            "Id"
+          ],
+          "columnsTo": [
+            "Id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "TouristProgress": {
+      "name": "TouristProgress",
+      "schema": "encounters",
+      "columns": {
+        "Id": {
+          "name": "Id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "UserId": {
+          "name": "UserId",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "Xp": {
+          "name": "Xp",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "Level": {
+          "name": "Level",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    }
+  },
+  "enums": {},
+  "schemas": {
+    "encounters": "encounters"
+  },
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

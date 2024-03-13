@@ -6,60 +6,60 @@ import {
   jsonb,
   pgSchema,
   serial,
-  varchar,
+  text,
 } from "drizzle-orm/pg-core";
 
 export const encounterSchema = pgSchema("encounters");
 
 export const encounters = encounterSchema.table("Encounters", {
-  Id: serial("Id").primaryKey(),
-  Title: varchar("Title", { length: 256 }),
-  Description: varchar("Description", { length: 256 }),
-  Picture: varchar("Picture", { length: 256 }),
-  Longitude: doublePrecision("Longitude"),
-  Latitude: doublePrecision("Latitude"),
-  Radius: doublePrecision("Radius"),
-  XpReward: integer("XpReward"),
-  Status: integer("Status"),
-  Type: integer("Type"),
-  Instances: jsonb("Instances"),
+  id: serial("Id").primaryKey(),
+  title: text("Title").notNull(),
+  description: text("Description").notNull(),
+  picture: text("Picture").notNull(),
+  longitude: doublePrecision("Longitude").notNull(),
+  latitude: doublePrecision("Latitude").notNull(),
+  radius: doublePrecision("Radius").notNull(),
+  xpReward: integer("XpReward").notNull(),
+  encounterStatus: integer("Status").notNull(),
+  encounterType: integer("Type").notNull(),
+  instances: jsonb("Instances"),
 });
 
 export const hiddenLocationEncounters = encounterSchema.table(
   "HiddenLocationEncounters",
   {
-    Id: bigint("Id", { mode: "number" })
+    id: bigint("Id", { mode: "number" })
       .primaryKey()
-      .references(() => encounters.Id),
-    PictureLongitude: doublePrecision("PictureLongitude").notNull(),
-    PictureLatitude: doublePrecision("PictureLatitude").notNull(),
+      .references(() => encounters.id),
+    pictureLongitude: doublePrecision("PictureLongitude").notNull(),
+    pictureLatitude: doublePrecision("PictureLatitude").notNull(),
   }
 );
 
 export const keyPointEncounter = encounterSchema.table("KeyPointEncounter", {
-  Id: bigint("Id", { mode: "number" })
+  id: bigint("Id", { mode: "number" })
     .primaryKey()
-    .references(() => encounters.Id),
-  KeyPointId: bigint("KeyPointId", { mode: "number" }).notNull(),
+    .references(() => encounters.id),
+  keyPointId: bigint("KeyPointId", { mode: "number" }).notNull(),
 });
 
 export const miscEncounters = encounterSchema.table("MiscEncounters", {
-  Id: bigint("Id", { mode: "number" })
+  id: bigint("Id", { mode: "number" })
     .primaryKey()
-    .references(() => encounters.Id),
-  ChallengeDone: boolean("ChallengeDone").notNull(),
+    .references(() => encounters.id),
+  challengeDone: boolean("ChallengeDone").notNull(),
 });
 
 export const socialEcnounters = encounterSchema.table("SocialEncounters", {
-  Id: bigint("Id", { mode: "number" })
+  id: bigint("Id", { mode: "number" })
     .primaryKey()
-    .references(() => encounters.Id),
-  PeopleNumber: integer("PeopleNumber").notNull(),
+    .references(() => encounters.id),
+  peopleNumber: integer("PeopleNumber").notNull(),
 });
 
 export const touristProgress = encounterSchema.table("TouristProgress", {
-  Id: bigint("Id", { mode: "number" }).primaryKey(),
-  UserId: bigint("UserId", { mode: "number" }).notNull(),
-  Xp: integer("Xp").notNull(),
-  Level: integer("Level").notNull(),
+  id: bigint("Id", { mode: "number" }).primaryKey(),
+  userId: bigint("UserId", { mode: "number" }).notNull(),
+  xp: integer("Xp").notNull(),
+  level: integer("Level").notNull(),
 });
