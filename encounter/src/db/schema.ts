@@ -6,22 +6,22 @@ import {
   jsonb,
   pgSchema,
   serial,
-  varchar,
+  text,
 } from "drizzle-orm/pg-core";
 
 export const encounterSchema = pgSchema("encounters");
 
 export const encounters = encounterSchema.table("Encounters", {
   id: serial("Id").primaryKey(),
-  title: varchar("Title", { length: 256 }),
-  description: varchar("Description", { length: 256 }),
-  picture: varchar("Picture", { length: 256 }),
-  longitude: doublePrecision("Longitude"),
-  latitude: doublePrecision("Latitude"),
-  radius: doublePrecision("Radius"),
-  xpReward: integer("XpReward"),
-  status: integer("Status"),
-  type: integer("Type"),
+  title: text("Title").notNull(),
+  description: text("Description").notNull(),
+  picture: text("Picture").notNull(),
+  longitude: doublePrecision("Longitude").notNull(),
+  latitude: doublePrecision("Latitude").notNull(),
+  radius: doublePrecision("Radius").notNull(),
+  xpReward: integer("XpReward").notNull(),
+  encounterStatus: integer("Status").notNull(),
+  encounterType: integer("Type").notNull(),
   instances: jsonb("Instances"),
 });
 
