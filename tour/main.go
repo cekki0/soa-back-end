@@ -14,7 +14,7 @@ import (
 )
 
 func initDB() *gorm.DB {
-	dsn := "host=localhost user=postgres password=super dbname=gorm port=5432 sslmode=disable"
+	dsn := "host=localhost user=postgres password=super dbname=tour port=5432 sslmode=disable"
 	database, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		print(err)
@@ -23,6 +23,18 @@ func initDB() *gorm.DB {
 
 	database.AutoMigrate(&model.Tour{})
 	return database
+}
+
+func startServer(tourHandler *handler.TourHandler) {
+	router := mux.NewRouter().StrictSlash(true)
+
+	router.HandleFunc("/tour/{id}", tourHandler.FindById).Methods("GET")
+	router.HandleFunc("/tours", tourHandler.FindAll).Methods("GET")
+	router.HandleFunc("/tour", tourHandler.Create).Methods("POST")
+
+	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./static")))
+	println("Server is running")
+	log.Fatal(http.ListenAndServe(":8080", router))
 }
 
 func main() {
@@ -36,13 +48,5 @@ func main() {
 	tourService := &service.TourService{TourRepo: tourRepo}
 	tourHandler := &handler.TourHandler{TourService: tourService}
 
-	router := mux.NewRouter().StrictSlash(true)
-
-	router.HandleFunc("/tour/{id}", tourHandler.FindById).Methods("GET")
-	router.HandleFunc("/tours", tourHandler.FindAll).Methods("GET")
-	router.HandleFunc("/tour", tourHandler.Create).Methods("POST")
-
-	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./static")))
-	println("Server is running")
-	log.Fatal(http.ListenAndServe(":8090", router))
+	startServer(tourHandler)
 }

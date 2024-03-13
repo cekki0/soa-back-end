@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"tour/model"
 	"tour/service"
@@ -16,7 +15,6 @@ type TourHandler struct {
 
 func (handler *TourHandler) FindById(writer http.ResponseWriter, req *http.Request) {
 	id := mux.Vars(req)["id"]
-	log.Printf("Tour sa id-em %s", id)
 	student, err := handler.TourService.FindById(id)
 	writer.Header().Set("Content-Type", "application/json")
 	if err != nil {
