@@ -12,7 +12,7 @@ type KeyPoint struct {
 	ImagePath           string         `json:"imagePath"`
 	Order               float64        `json:"order"`
 	HasSecret           bool           `json:"hasSecret"`
-	KeyPointSecret      KeyPointSecret `json:"keyPointSecret" default:"null"`
+	KeyPointSecret      KeyPointSecret `json:"keyPointSecret" default:"null" gorm:"type:text"`
 	IsEncounterRequired bool           `json:"isEncounterRequired"`
 	HasEncounter        bool           `json:"hasEncounter"`
 }

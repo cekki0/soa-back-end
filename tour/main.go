@@ -31,6 +31,8 @@ func initDB() *gorm.DB {
 	}
 
 	database.AutoMigrate(&model.Tour{})
+	database.AutoMigrate(&model.KeyPoint{})	
+	database.AutoMigrate(&model.Review{})	
 	return database
 }
 
