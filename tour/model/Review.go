@@ -6,14 +6,14 @@ import (
 )
 
 type Review struct {
-	ID            int       `json:"id"`
-	Rating        int       `json:"rating"`
-	Comment       string    `json:"comment"`
-	TouristID     int64     `json:"touristId"`
-	TourVisitDate time.Time `json:"tourVisitDate"`
-	CommentDate   time.Time `json:"commentDate"`
-	TourID        int64     `json:"tourId"`
-	Images        []string  `json:"images"`
+	Id            int       `json:"Id"`
+	Rating        int       `json:"Rating"`
+	Comment       string    `json:"Comment"`
+	TouristID     int64     `json:"TouristId"`
+	TourVisitDate time.Time `json:"TourVisitDate" gorm:"type:time"`
+	CommentDate   time.Time `json:"CommentDate" gorm:"type:time"`
+	TourID        int64     `json:"TourId"`
+	Images        []string  `json:"Images" gorm:"type:text"`
 }
 
 func NewReview(id, rating int, comment string, touristID int64, tourVisitDate, commentDate time.Time, tourID int64, images []string) (*Review, error) {
@@ -28,7 +28,7 @@ func NewReview(id, rating int, comment string, touristID int64, tourVisitDate, c
 	}
 
 	return &Review{
-		ID:            id,
+		Id:            id,
 		Rating:        rating,
 		Comment:       comment,
 		TouristID:     touristID,

@@ -22,21 +22,21 @@ const (
 )
 
 type Tour struct {
-	ID          int            `json:"id"`
-	AuthorID    int            `json:"authorId"`
-	Name        string         `json:"name"`
-	Description string         `json:"description"`
-	Difficulty  int            `json:"difficulty"`
-	Tags        []string       `json:"tags" gorm:"type:text[]"`
-	Status      TourStatus     `json:"status"`
-	Price       float64        `json:"price"`
-	Distance    float64        `json:"distance"`
-	PublishDate time.Time      `json:"publishDate" gorm:"type:time"`
-	ArchiveDate time.Time      `json:"archiveDate" gorm:"type:time"`
-	KeyPoints   []KeyPoint     `json:"keyPoints" gorm:"type:text[]"`
-	Durations   []TourDuration `json:"durations" gorm:"type:text[]"`
-	Reviews     []Review       `json:"reviews" gorm:"type:text[]"`
-	Category    TourCategory   `json:"category"`
+	Id          int            `json:"Id"`
+	AuthorID    int            `json:"AuthorId"`
+	Name        string         `json:"Name"`
+	Description string         `json:"Description"`
+	Difficulty  int            `json:"Difficulty"`
+	Tags        []string       `json:"Tags" gorm:"type:text[]"`
+	Status      TourStatus     `json:"Status"`
+	Price       float64        `json:"Price"`
+	Distance    float64        `json:"Distance"`
+	PublishDate time.Time      `json:"PublishDate" gorm:"type:time"`
+	ArchiveDate time.Time      `json:"ArchiveDate" gorm:"type:time"`
+	KeyPoints   []KeyPoint     `json:"KeyPoints" gorm:"type:text[]"`
+	Durations   []TourDuration `json:"Durations" gorm:"type:text[]"`
+	Reviews     []Review       `json:"Reviews" gorm:"type:text[]"`
+	Category    TourCategory   `json:"Category"`
 }
 
 // func (a StringArray) Value() (driver.Value, error) {

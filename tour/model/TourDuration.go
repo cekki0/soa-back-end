@@ -9,8 +9,8 @@ const (
 )
 
 type TourDuration struct {
-	Duration  int           `json:"duration"`
-	Transport TransportType `json:"transport"`
+	Duration  int           `json:"Duration"`
+	Transport TransportType `json:"Transport"`
 }
 
 func NewTourDuration(duration int, transport TransportType) *TourDuration {

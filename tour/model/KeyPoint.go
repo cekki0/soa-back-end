@@ -1,18 +1,18 @@
 package model
 
 type KeyPoint struct {
-	ID                  int            `json:"id"`
-	TourID              int            `json:"tourId"`
-	Tour                Tour           `json:"tour" gorm:"-"`
-	Name                string         `json:"name"`
-	Description         string         `json:"description"`
-	Longitude           float64        `json:"longitude"`
-	Latitude            float64        `json:"latitude"`
-	LocationAdress      string         `json:"locationAdress"`
-	ImagePath           string         `json:"imagePath"`
-	Order               float64        `json:"order"`
-	HasSecret           bool           `json:"hasSecret"`
-	KeyPointSecret      KeyPointSecret `json:"keyPointSecret" default:"null" gorm:"type:text"`
-	IsEncounterRequired bool           `json:"isEncounterRequired"`
-	HasEncounter        bool           `json:"hasEncounter"`
+	Id                  int            `json:"Id"`
+	TourID              int            `json:"TourId"`
+	Tour                Tour           `json:"Tour" gorm:"-"`
+	Name                string         `json:"Name"`
+	Description         string         `json:"Description"`
+	Longitude           float64        `json:"Longitude"`
+	Latitude            float64        `json:"Latitude"`
+	LocationAdress      string         `json:"LocationAdress"`
+	ImagePath           string         `json:"ImagePath"`
+	Order               float64        `json:"Order"`
+	HasSecret           bool           `json:"HasSecret"`
+	KeyPointSecret      KeyPointSecret `json:"KeyPointSecret" default:"null" gorm:"type:text"`
+	IsEncounterRequired bool           `json:"IsEncounterRequired"`
+	HasEncounter        bool           `json:"HasEncounter"`
 }
