@@ -20,3 +20,12 @@ app.listen(port, async () => {
 app.get("/", async (req: Request, res: Response) => {
   res.send("ez");
 });
+
+app.get("/dragan", async (req: Request, res: Response) => {
+    res.send("dragoslavlje")
+})
+
+
+
+
+
