@@ -24,10 +24,6 @@ type Tour struct {
 	Description string `json:"description"`
 }
 
-func (t *Tour) SchemaName() string {
-	return "tours"
-}
-
 func (a StringArray) Value() (driver.Value, error) {
 	return json.Marshal(a)
 }
