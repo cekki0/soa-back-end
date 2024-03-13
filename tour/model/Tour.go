@@ -18,7 +18,7 @@ const (
 	Ready
 )
 
-const(
+const (
 	Adventure TourCategory = iota
 	FamilyTrips
 	Cruise
@@ -26,21 +26,21 @@ const(
 )
 
 type Tour struct {
-	ID           int    	    `json:"id"`
-	AuthorID     int    	    `json:"authorId"`
-	Name         string 	    `json:"name"`
-	Description  string 	    `json:"description"`
-	Difficulty   int       	    `json:"difficulty"`
-	Tags         StringArray    `json:"tags"`
-	Status    	 TourStatus	    `json:"status"`
-	Price 		 float64	    `json:"price"`
-	Distance 	 float64	    `json:"distance"`
-	PublishDate	 time.Time	    `json:"publishDate"`
-	ArchiveDate	 time.Time	    `json:"archiveDate"`
-	KeyPoints 	 []KeyPoint	    `json:"keyPoints"`
-	Durations    []TourDuration `json:"durations"`
-	Reviews 	 []TourReview   `json:"reviews"`
-	Category 	 TourCategory   `json:"category"`
+	ID          int            `json:"id"`
+	AuthorID    int            `json:"authorId"`
+	Name        string         `json:"name"`
+	Description string         `json:"description"`
+	Difficulty  int            `json:"difficulty"`
+	Tags        StringArray    `json:"tags"`
+	Status      TourStatus     `json:"status"`
+	Price       float64        `json:"price"`
+	Distance    float64        `json:"distance"`
+	PublishDate time.Time      `json:"publishDate"`
+	ArchiveDate time.Time      `json:"archiveDate"`
+	KeyPoints   []KeyPoint     `json:"keyPoints"`
+	Durations   []TourDuration `json:"durations"`
+	Reviews     []Review       `json:"reviews"`
+	Category    TourCategory   `json:"category"`
 }
 
 func (a StringArray) Value() (driver.Value, error) {
