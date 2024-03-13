@@ -1,7 +1,7 @@
 import { Router, Request, Response } from "express";
 import ExampleService from "../service/example.service";
 import validateRequest from "../middleware/validateRequest";
-import { exampleSchema, exampleType } from "../schema/example.schema";
+import { ExampleSchema, ExampleDto } from "../schema/example.schema";
 
 const router = Router();
 
@@ -14,8 +14,8 @@ router.get("/", async (req: Request, res: Response) => {
 
 router.post(
   "/",
-  validateRequest(exampleSchema),
-  (req: Request<{}, {}, exampleType["body"]>, res: Response) => {
+  validateRequest(ExampleSchema),
+  (req: Request<{}, {}, ExampleDto>, res: Response) => {
     res.sendStatus(200);
   }
 );

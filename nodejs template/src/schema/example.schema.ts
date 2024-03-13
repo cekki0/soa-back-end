@@ -1,10 +1,10 @@
-import { object, string, TypeOf, number } from "zod";
+import { object, string, TypeOf, number, z } from "zod";
 
-export const exampleSchema = object({
+export const ExampleSchema = object({
   body: object({
     prop1: string({ required_error: "prop is required" }),
     prop2: number({ required_error: "prop is required" }).gt(10),
   }),
 });
 
-export type exampleType = TypeOf<typeof exampleSchema>;
+export type ExampleDto = z.infer<typeof ExampleSchema>;

@@ -1,5 +1,4 @@
 import { object, string, TypeOf, number, z } from "zod";
-import { encounterSchema } from "../db/schema";
 
 export const EncounterSchema = object({
   title: string({
