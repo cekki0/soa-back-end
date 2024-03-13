@@ -1,27 +1,52 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
+	"tour/handler"
+	"tour/model"
+	"tour/repo"
+	"tour/service"
 
 	"github.com/gorilla/mux"
-) 
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+)
 
-func handleReq(res http.ResponseWriter, req *http.Request){
-	fmt.Println(req.Header)
-	res.Write([]byte("test"))
+func initDB() *gorm.DB {
+	dsn := "host=localhost user=postgres password=super dbname=tour port=5432 sslmode=disable"
+	database, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		print(err)
+		return nil
+	}
+
+	database.AutoMigrate(&model.Tour{})
+	return database
 }
 
-func handlePathReq(res http.ResponseWriter, req *http.Request){
-	path := mux.Vars(req)["path"]	
-	fmt.Println(req.Header)
-	res.Write([]byte(path))
-}
+func startServer(tourHandler *handler.TourHandler) {
+	router := mux.NewRouter().StrictSlash(true)
 
-func main() {		
-	router := mux.NewRouter()
-	router.HandleFunc("/", handleReq)
-	router.HandleFunc("/{path}", handlePathReq).Methods("GET")
+	router.HandleFunc("/tour/{id}", tourHandler.FindById).Methods("GET")
+	router.HandleFunc("/tours", tourHandler.FindAll).Methods("GET")
+	router.HandleFunc("/tour", tourHandler.Create).Methods("POST")
+
+	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./static")))
+	println("Server is running")
 	log.Fatal(http.ListenAndServe(":8080", router))
+}
+
+func main() {
+	database := initDB()
+	if database == nil {
+		print("Database connection failed")
+		return
+	}
+
+	tourRepo := &repo.TourRepository{DatabaseConnection: database}
+	tourService := &service.TourService{TourRepo: tourRepo}
+	tourHandler := &handler.TourHandler{TourService: tourService}
+
+	startServer(tourHandler)
 }
