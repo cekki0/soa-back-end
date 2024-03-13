@@ -22,7 +22,7 @@ const (
 )
 
 type Tour struct {
-	Id          int            `json:"Id"`
+	Id          int            `json:"Id" gorm:"column:Id;primaryKey"`
 	AuthorID    int            `json:"AuthorId"`
 	Name        string         `json:"Name"`
 	Description string         `json:"Description"`
@@ -33,10 +33,14 @@ type Tour struct {
 	Distance    float64        `json:"Distance"`
 	PublishDate time.Time      `json:"PublishDate" gorm:"type:time"`
 	ArchiveDate time.Time      `json:"ArchiveDate" gorm:"type:time"`
-	KeyPoints   []KeyPoint     `json:"KeyPoints" gorm:"type:text[]"`
-	Durations   []TourDuration `json:"Durations" gorm:"type:text[]"`
-	Reviews     []Review       `json:"Reviews" gorm:"type:text[]"`
+	KeyPoints   []KeyPoint     `json:"KeyPoints" gorm:"type:jsonb"`
+	Durations   []TourDuration `json:"Durations" gorm:"type:jsonb"`
+	Reviews     []Review       `json:"Reviews" gorm:"type:jsonb"`
 	Category    TourCategory   `json:"Category"`
+}
+
+func (Tour) TableName() string {
+	return `tours."Tours"`
 }
 
 // func (a StringArray) Value() (driver.Value, error) {
