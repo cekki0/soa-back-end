@@ -27,7 +27,7 @@ const (
 
 type Tour struct {
 	Id          int            `json:"Id" gorm:"column:Id;primaryKey"`
- 	IsDeleted   bool       	   `json:"IsDeleted" gorm:"column:IsDeleted"`
+	IsDeleted   bool           `json:"IsDeleted" gorm:"column:IsDeleted"`
 	AuthorID    int            `json:"AuthorId" gorm:"column:AuthorId"`
 	Name        string         `json:"Name" gorm:"column:Name"`
 	Description string         `json:"Description" gorm:"column:Description"`
@@ -48,7 +48,7 @@ func (Tour) TableName() string {
 	return `tours."Tours"`
 }
 
-type TourDurations struct{
+type TourDurations struct {
 	Data []TourDuration
 }
 

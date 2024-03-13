@@ -7,14 +7,14 @@ import (
 )
 
 type Review struct {
-	Id            int          `json:"Id" gorm:"column:Id"`	
-	Rating        int          `json:"Rating" gorm:"column:Rating"`
-	Comment       string       `json:"Comment" gorm:"column:Comment"`
-	TouristID     int          `json:"TouristId" gorm:"column:TouristId"`
-	TourVisitDate pq.NullTime  `json:"TourVisitDate" gorm:"type:time;column:TourVisitDate"`
-	CommentDate   pq.NullTime  `json:"CommentDate" gorm:"type:time;column:CommentDate"`
-	TourID        int          `json:"TourId" gorm:"column:TourId;column:TourId"`
-	Images        pq.StringArray  `json:"Images" gorm:"type:text[];column:Images"`
+	Id            int            `json:"Id" gorm:"column:Id"`
+	Rating        int            `json:"Rating" gorm:"column:Rating"`
+	Comment       string         `json:"Comment" gorm:"column:Comment"`
+	TouristID     int            `json:"TouristId" gorm:"column:TouristId"`
+	TourVisitDate pq.NullTime    `json:"TourVisitDate" gorm:"type:time;column:TourVisitDate"`
+	CommentDate   pq.NullTime    `json:"CommentDate" gorm:"type:time;column:CommentDate"`
+	TourID        int            `json:"TourId" gorm:"column:TourId;column:TourId"`
+	Images        pq.StringArray `json:"Images" gorm:"type:text[];column:TourId"`
 }
 
 func (Review) TableName() string {
