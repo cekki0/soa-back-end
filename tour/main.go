@@ -11,11 +11,20 @@ import (
 	"github.com/gorilla/mux"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/schema"
 )
 
 func initDB() *gorm.DB {
-	dsn := "host=localhost user=postgres password=super dbname=tour port=5432 sslmode=disable"
-	database, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	dsn := "host=localhost user=postgres password=super dbname=explorer-v1 port=5432 sslmode=disable"
+	database, err := gorm.Open(postgres.New(postgres.Config{
+		DSN: dsn,
+		PreferSimpleProtocol: true,
+	}), &gorm.Config{
+		NamingStrategy: schema.NamingStrategy{
+			TablePrefix: "tours.",
+			SingularTable: false,
+		},
+	})
 	if err != nil {
 		print(err)
 		return nil

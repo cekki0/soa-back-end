@@ -27,9 +27,9 @@ func (repo *TourRepository) Create(tour model.Tour) error {
 	return nil
 }
 
-func (repo *TourRepository) FindAll() ([]model.Tour, error) {
+func (repo *TourRepository) FindAll() ([]model.Tour, error) {	
 	var tours []model.Tour
-	dbResult := repo.DatabaseConnection.Find(&tours)
+	dbResult := repo.DatabaseConnection.Find(&tours)	
 	if dbResult.Error != nil {
 		return nil, dbResult.Error
 	}

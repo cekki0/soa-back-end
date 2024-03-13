@@ -26,7 +26,7 @@ func (service *TourService) Create(tour model.Tour) error {
 	return nil
 }
 
-func (service *TourService) FindAll() ([]model.Tour, error) {
+func (service *TourService) FindAll() ([]model.Tour, error) {	
 	tours, err := service.TourRepo.FindAll()
 	if err != nil {
 		return nil, fmt.Errorf("failed to retrieve tours: %w", err)

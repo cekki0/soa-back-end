@@ -42,7 +42,7 @@ func (handler *TourHandler) Create(writer http.ResponseWriter, req *http.Request
 	writer.WriteHeader(http.StatusCreated)
 }
 
-func (handler *TourHandler) FindAll(writer http.ResponseWriter, req *http.Request) {
+func (handler *TourHandler) FindAll(writer http.ResponseWriter, req *http.Request) {	
 	tours, err := handler.TourService.FindAll()
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
