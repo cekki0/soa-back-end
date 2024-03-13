@@ -1,5 +1,6 @@
 ﻿using Explorer.Encounters.API.Dtos;
 using Explorer.Encounters.API.Public;
+using FluentResults;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,11 +17,18 @@ namespace Explorer.API.Controllers.Author
         }
 
         [HttpPost("create")]
-        public ActionResult<HiddenLocationEncounterResponseDto> Create([FromBody] HiddenLocationEncounterCreateDto encounter)
+        public async Task<ActionResult<HiddenLocationEncounterResponseDto>> Create([FromBody] HiddenLocationEncounterCreateDto encounter)
         {
-            var result = _encounterService.CreateHiddenLocationEncounter(encounter);
-            return CreateResponse(result);
+            var result = await httpClient.PostAsJsonAsync(":8089/api/create", encounter);
+            return CreateResponse(result.ToResult());
+
         }
+
+
+        
+
+        
+
 
     }
 }

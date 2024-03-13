@@ -16,6 +16,7 @@ type EncountersData = {
     XpReward: number;
     Status: number;
     Type: number;
+    Instances: string;
     
 };
 export default class EncounterService {
@@ -33,7 +34,6 @@ export default class EncounterService {
             const createEncounter = async (encounter: EncountersData) => {
                 return db.insert(encounters).values(encounter);
             };
-
             return await createEncounter(encounterData);
         } catch (error) {
             console.log(error);

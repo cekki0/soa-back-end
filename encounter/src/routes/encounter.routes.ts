@@ -15,14 +15,14 @@ router.get("/dragan", async (req: Request, res: Response) => {
     res.send(result);
 })
 
-router.post('/', async (req, res) => {
+router.post('/create', async (req, res) => {
     try {
         const encounter = req.body;
         const result = await service.create(encounter);
-        return res.status(200).json(result);
+        return res.sendStatus(200);
     } catch (error) {
         console.error('error while creating encounter:', error);
-        return res.status(500).json({ message: 'error while creating encounter' });
+        return res.sendStatus(500);
     }
 });
 
