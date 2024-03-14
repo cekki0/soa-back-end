@@ -2,13 +2,13 @@ import { object, string, TypeOf, number, z } from "zod";
 
 export const EncounterSchema = object({
   title: string({
-    required_error: "title is required",
+    required_error: "Title is required",
   }).min(3, "Title is too short."),
   description: string({
-    required_error: "description is required",
+    required_error: "Description is required",
   }),
   picture: string({
-    required_error: "picture is required",
+    required_error: "Picture is required",
   }).url("Invalid picture url."),
   longitude: number({
     required_error: "Longitude is required",

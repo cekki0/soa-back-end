@@ -37,4 +37,21 @@ router.post(
   }
 );
 
+router.get(
+  "/:encounterId/instance/:userId",
+  async (req: Request, res: Response) => {
+    try {
+      const encounterId = Number.parseInt(req.params.encounterId);
+      const userId = Number.parseInt(req.params.userId);
+      const result = await service.getInstances(encounterId, userId);
+      if (result.success) {
+        return res.send(result.value);
+      }
+      return res.status(400).send(result.message);
+    } catch (error) {
+      return res.status(500).send("Error fetching encounter instances");
+    }
+  }
+);
+
 export default router;

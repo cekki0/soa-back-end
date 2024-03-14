@@ -2,6 +2,11 @@ import { eq } from "drizzle-orm";
 import { encounters } from "../db/schema";
 import db from "../utils/db-connection";
 import { CreateEncounterDto } from "../schema/encounter.schema";
+import Result from "../utils/Result";
+import {
+  EncounterInstanceDto,
+  EncounterInstanceSchema,
+} from "../schema/encounterInstance.schema";
 
 export default class EncounterService {
   public async getAll() {
@@ -46,6 +51,39 @@ export default class EncounterService {
       return result;
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  public async getInstances(
+    encounterId: number,
+    userId: number
+  ): Promise<Result<EncounterInstanceDto[]>> {
+    const result = new Result<EncounterInstanceDto[]>();
+    try {
+      const instancesResult = await db
+        .select({ instances: encounters.instances })
+        .from(encounters)
+        .where(eq(encounters.id, encounterId));
+
+      if (!instancesResult) {
+        result.message = "Invalid encounter id";
+        return result;
+      }
+      result.success = true;
+      if (instancesResult[0] && instancesResult[0].instances) {
+        const instances = await Promise.all(
+          instancesResult[0].instances.map((x) => {
+            return EncounterInstanceSchema.parseAsync(x);
+          })
+        );
+        result.value = instances.filter((x) => x.userId == userId);
+      }
+      return result;
+    } catch (error: any) {
+      console.error(error);
+      result.success = false;
+      result.message = error.message;
+      return result;
     }
   }
 }

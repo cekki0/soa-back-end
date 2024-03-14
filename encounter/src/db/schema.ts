@@ -8,6 +8,7 @@ import {
   serial,
   text,
 } from "drizzle-orm/pg-core";
+import { EncounterInstanceDto } from "../schema/encounterInstance.schema";
 
 export const encounterSchema = pgSchema("encounters");
 
@@ -22,7 +23,7 @@ export const encounters = encounterSchema.table("Encounters", {
   xpReward: integer("XpReward").notNull(),
   encounterStatus: integer("Status").notNull(),
   encounterType: integer("Type").notNull(),
-  instances: jsonb("Instances"),
+  instances: jsonb("Instances").$type<EncounterInstanceDto[]>(),
 });
 
 export const hiddenLocationEncounters = encounterSchema.table(
