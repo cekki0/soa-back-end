@@ -19,7 +19,7 @@ namespace Explorer.API.Controllers.Author
         [HttpPost("create")]
         public async Task<ActionResult<HiddenLocationEncounterResponseDto>> Create([FromBody] HiddenLocationEncounterCreateDto encounter)
         {
-            var result = await httpClient.PostAsJsonAsync(":8089/api/create", encounter);
+            var result = await httpClient.PostAsJsonAsync(":8089/api/createHiddenEncounter", encounter);
             return CreateResponse(result.ToResult());
 
         }

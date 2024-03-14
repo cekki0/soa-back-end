@@ -20,17 +20,10 @@ namespace Explorer.API.Controllers.Tourist
 
 
         [HttpPost("createMisc")]
-        public ActionResult<MiscEncounterResponseDto> Create([FromBody] MiscEncounterCreateDto encounter)
+        public async Task<ActionResult<MiscEncounterResponseDto>> CreateAsync([FromBody] MiscEncounterCreateDto encounter)
         {
-            long userId = int.Parse(HttpContext.User.Claims.First(i => i.Type.Equals("id", StringComparison.OrdinalIgnoreCase)).Value);
-            var progress = _touristProgressService.GetByUserId(userId);
-            if (progress.Value.Level >= 10)
-            {
-                var result = _encounterService.CreateMiscEncounter(encounter);
-                return CreateResponse(result);
-
-            }
-            return CreateResponse(Result.Fail("Tourist level is not high enough."));
+            var result = await httpClient.PostAsJsonAsync(":8089/api/createMiscEncounter/tourist", encounter);
+            return CreateResponse(result.ToResult());
         }
 
     }

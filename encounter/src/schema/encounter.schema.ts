@@ -1,4 +1,7 @@
-import { object, string, TypeOf, number, z } from "zod";
+import { object, string, TypeOf, number, z,boolean, } from "zod";
+import { miscEncounters } from "../db/schema";
+
+
 
 export const EncounterSchema = object({
   title: string({
@@ -38,4 +41,32 @@ export const EncounterSchema = object({
     .lte(4, "Invalid encounter type value"),
 });
 
-export type CreateEncounterDto = z.infer<typeof EncounterSchema>;
+
+export const MiscEncountersSchema = EncounterSchema.extend({
+  challengeDone:boolean(),
+});
+
+
+export const SocialEncounterSchema = EncounterSchema.extend({
+  peopleNumber : number({required_error:"Encounter type is required"}).gte(2),
+})
+
+
+export const HiddenEncounterSchema = EncounterSchema.extend({
+  PictureLongitude : number({required_error:"Encounter type is required"}),
+  PictureLatitude : number({required_error:"Encounter type is required"}),
+
+})
+
+
+const HasID = z.object({id:z.number()});
+const EncounterSchemaID = EncounterSchema.merge(HasID);
+const SocialEncounterSchemaID = SocialEncounterSchema.merge(HasID);
+const HiddenEncounterSchemaID = HiddenEncounterSchema.merge(HasID);
+const MiscEncounterSchemaID = MiscEncountersSchema.merge(HasID);
+
+
+export type CreateEncounterDto = z.infer<typeof EncounterSchemaID>;
+export type CreateMiscEncounterDto = z.infer<typeof MiscEncounterSchemaID>;
+export type CreateSocialEncounterDto = z.infer<typeof SocialEncounterSchemaID>;
+export type CreateHiddenEncounterDto = z.infer<typeof HiddenEncounterSchemaID>;

@@ -1,25 +1,12 @@
 import { eq } from "drizzle-orm";
-import { encounters } from "../db/schema";
+import { encounters, hiddenLocationEncounters, miscEncounters, socialEcnounters, touristProgress } from "../db/schema";
 import db from "../utils/db-connection";
-import { CreateEncounterDto } from "../schema/encounter.schema";
+import { CreateEncounterDto, CreateHiddenEncounterDto,CreateMiscEncounterDto,CreateSocialEncounterDto } from "../schema/encounter.schema";
+import { number } from "zod";
 
 
 
 
-type EncountersData = {
-    Id: number;
-    Title: string;
-    Description: string;
-    Picture: string;
-    Longitude: number;
-    Latitude: number;
-    Radius: number;
-    XpReward: number;
-    Status: number;
-    Type: number;
-    Instances: string;
-    
-};
 export default class EncounterService {
   public async getAll() {
     try {
@@ -30,7 +17,139 @@ export default class EncounterService {
     }
   }
 
-  public async create(encounterData: CreateEncounterDto) {
+
+  
+
+
+  public async createMiscEncounterAuthor(encounterData: CreateMiscEncounterDto) {
+    try {
+      const createEncounter = async (encounter: CreateEncounterDto) => {
+       const result  = await db.insert(encounters).values(encounter).returning({ id: encounters.id });
+        
+        return db.insert(miscEncounters).values({ id: result[0].id , challengeDone: encounterData.challengeDone})
+      };
+
+      return await createEncounter(encounterData);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+
+
+
+  public async createMiscEncounterTourist(encounterData: CreateMiscEncounterDto) {
+    try {
+        const result1 = await db.select().from(touristProgress).where(eq(touristProgress.id, encounterData.id))
+        if( result1[0].level >= 10 ){
+      
+            const createEncounter = async (encounter: CreateEncounterDto) => {
+                const result  = await db.insert(encounters).values(encounter).returning({ id: encounters.id });
+                 
+                 return db.insert(miscEncounters).values({ id: result[0].id , challengeDone: encounterData.challengeDone})
+                
+                };
+                return await createEncounter(encounterData);
+            
+        }
+
+        else{
+            console.log("dragan");
+        }
+
+      
+
+      
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+
+
+
+
+  public async createSocialEncounterTourist(encounterData: CreateSocialEncounterDto) {
+    try {
+
+        const result1 = await db.select().from(touristProgress).where(eq(touristProgress.id, encounterData.id))
+        if( result1[0].level >= 10 ){
+      
+      const createEncounter = async (encounter: CreateEncounterDto) => {
+       const result  = await db.insert(encounters).values(encounter).returning({ id: encounters.id });
+        
+        return db.insert(socialEcnounters).values({ id: result[0].id , peopleNumber: encounterData.peopleNumber})
+      };
+
+      return await createEncounter(encounterData);
+    }
+    else{
+        console.log("dragisa");
+    }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+
+
+
+  public async createSocialEncounterAuthor(encounterData: CreateSocialEncounterDto) {
+    try {
+      const createEncounter = async (encounter: CreateEncounterDto) => {
+       const result  = await db.insert(encounters).values(encounter).returning({ id: encounters.id });
+        
+        return db.insert(socialEcnounters).values({ id: result[0].id , peopleNumber: encounterData.peopleNumber})
+      };
+
+      return await createEncounter(encounterData);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+
+
+  public async createHiddenEncounterTourist(encounterData: CreateHiddenEncounterDto) {
+    try {
+        const result1 = await db.select().from(touristProgress).where(eq(touristProgress.id, encounterData.id))
+        if( result1[0].level >= 10 ){
+      
+
+      const createEncounter = async (encounter: CreateEncounterDto) => {
+       const result  = await db.insert(encounters).values(encounter).returning({ id: encounters.id });
+        
+        return db.insert(hiddenLocationEncounters).values({ id: result[0].id , pictureLatitude: encounterData.PictureLatitude ,pictureLongitude:encounterData.PictureLongitude})
+      };
+
+      return await createEncounter(encounterData);
+    }
+    else{
+        console.log("dragance");
+    }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+
+  
+  public async createHiddenEncounterAuthor(encounterData: CreateHiddenEncounterDto) {
+    try {
+      const createEncounter = async (encounter: CreateEncounterDto) => {
+       const result  = await db.insert(encounters).values(encounter).returning({ id: encounters.id });
+        
+        return db.insert(hiddenLocationEncounters).values({ id: result[0].id , pictureLatitude: encounterData.PictureLatitude ,pictureLongitude:encounterData.PictureLongitude})
+      };
+
+      return await createEncounter(encounterData);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  
+  public async createEncounter(encounterData: CreateEncounterDto) {
     try {
       const createEncounter = async (encounter: CreateEncounterDto) => {
         return db.insert(encounters).values(encounter);
@@ -41,6 +160,8 @@ export default class EncounterService {
       console.log(error);
     }
   }
+
+
 
   public async getById(encounterId: number) {
     try {

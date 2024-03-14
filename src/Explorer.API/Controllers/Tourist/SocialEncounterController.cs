@@ -19,16 +19,10 @@ namespace Explorer.API.Controllers.Tourist
         }
 
         [HttpPost("create")]
-        public ActionResult<EncounterResponseDto> Create([FromBody] SocialEncounterCreateDto encounter)
+        public async Task<ActionResult<EncounterResponseDto>> CreateAsync([FromBody] SocialEncounterCreateDto encounter)
         {
-            long userId = int.Parse(HttpContext.User.Claims.First(i => i.Type.Equals("id", StringComparison.OrdinalIgnoreCase)).Value);
-            var progress = _touristProgressService.GetByUserId(userId);
-            if (progress.Value.Level >= 10)
-            {
-                var result = _encounterService.CreateSocialEncounter(encounter);
-                return CreateResponse(result);
-            }
-            return CreateResponse(Result.Fail("Tourist level is not high enough."));
+            var result = await httpClient.PostAsJsonAsync(":8089/api/createSocialEncounter/tourist", encounter);
+            return CreateResponse(result.ToResult());
         }
     }
 }

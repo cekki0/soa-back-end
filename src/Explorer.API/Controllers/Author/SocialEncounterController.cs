@@ -1,5 +1,6 @@
 ﻿using Explorer.Encounters.API.Dtos;
 using Explorer.Encounters.API.Public;
+using FluentResults;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,10 +17,10 @@ namespace Explorer.API.Controllers.Author
         }
 
         [HttpPost("create")]
-        public ActionResult<EncounterResponseDto> Create([FromBody] SocialEncounterCreateDto encounter)
+        public async Task<ActionResult<EncounterResponseDto>> CreateAsync([FromBody] SocialEncounterCreateDto encounter)
         {
-            var result = _encounterService.CreateSocialEncounter(encounter);
-            return CreateResponse(result);
+            var result = await httpClient.PostAsJsonAsync(":8089/api/createSocialEncounter/author", encounter);
+            return CreateResponse(result.ToResult());
         }
     }
 }
