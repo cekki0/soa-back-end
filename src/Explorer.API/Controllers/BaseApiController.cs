@@ -7,11 +7,10 @@ namespace Explorer.API.Controllers;
 [ApiController]
 public class BaseApiController : ControllerBase
 {
-
+    protected string encounterApi = "http://localhost:8089/api/";
 
     protected static HttpClient httpClient = new()
     {
-        BaseAddress = new Uri("http://localhost"),
     };
 
     protected ActionResult CreateErrorResponse(List<IError> errors)

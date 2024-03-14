@@ -38,4 +38,9 @@ export const EncounterSchema = object({
     .lte(4, "Invalid encounter type value"),
 });
 
+export const ResponseEncounterSchema = EncounterSchema.omit({
+  encounterStatus: true,
+});
+
 export type CreateEncounterDto = z.infer<typeof EncounterSchema>;
+export type ResponseEncounterDto = z.infer<typeof ResponseEncounterSchema>;

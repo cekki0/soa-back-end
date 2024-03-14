@@ -59,7 +59,7 @@ export const socialEcnounters = encounterSchema.table("SocialEncounters", {
 });
 
 export const touristProgress = encounterSchema.table("TouristProgress", {
-  id: bigint("Id", { mode: "number" }).primaryKey(),
+  id: serial("Id").primaryKey(),
   userId: bigint("UserId", { mode: "number" }).notNull(),
   xp: integer("Xp").notNull(),
   level: integer("Level").notNull(),

@@ -9,7 +9,7 @@ export const EncounterInstanceSchema = object({
   })
     .gte(0)
     .lte(1),
-  completionTime: z.coerce.date(),
+  completionTime: z.coerce.date().optional(),
 });
 
 export type EncounterInstanceDto = z.infer<typeof EncounterInstanceSchema>;
