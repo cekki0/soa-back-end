@@ -13,7 +13,7 @@ namespace Explorer.Encounters.Core.Domain.Encounter
         public int XpReward { get; init; }
         public EncounterStatus Status { get; private set; }
         public EncounterType Type { get; init; }
-        public List<EncounterInstance> Instances { get; } = new List<EncounterInstance>();
+        public List<EncounterInstance>? Instances { get; } = new List<EncounterInstance>();
 
         public Encounter(string title, string description, string picture, double longitude, double latitude, double radius, int xpReward, EncounterStatus status, EncounterType type)
         {

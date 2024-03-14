@@ -2,6 +2,7 @@
 using Explorer.Encounters.API.Public;
 using FluentResults;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Explorer.API.Controllers.Author
@@ -19,8 +20,14 @@ namespace Explorer.API.Controllers.Author
         [HttpPost("createMisc")]
         public async Task<ActionResult<MiscEncounterResponseDto>> CreateAsync([FromBody] MiscEncounterCreateDto encounter)
         {
-            var result = await httpClient.PostAsJsonAsync(":8089/api/createMiscEncounter", encounter);
-            return CreateResponse(result.ToResult());
+            var result = await httpClient.PostAsJsonAsync(encounterApi + "createMiscEncounter/author", encounter);
+            
+            return  new ContentResult
+            {
+                StatusCode = (int)result.StatusCode,
+                Content = await result.Content.ReadAsStringAsync(),
+                ContentType = "text/plain"
+            };
         }
 
     }
