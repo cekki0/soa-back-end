@@ -3,7 +3,7 @@ package model
 import (
 	"database/sql/driver"
 	"encoding/json"
-	"fmt"
+	"errors"
 
 	"github.com/lib/pq"
 )
@@ -48,21 +48,28 @@ func (Tour) TableName() string {
 	return `tours."Tours"`
 }
 
-type TourDurations struct {
-	Data []TourDuration
-}
+type TourDurations []TourDuration
 
-func (td *TourDurations) Scan(value interface{}) error {
-	if value == nil {
+func (ls *TourDurations) Scan(src interface{}) error {
+	if src == nil {
+		*ls = nil
 		return nil
 	}
-	bytes, ok := value.([]byte)
+
+	b, ok := src.([]byte)
 	if !ok {
-		return fmt.Errorf("failed to unmarshal JSONB value")
+		return errors.New("Scan source was not []byte")
 	}
-	return json.Unmarshal(bytes, td)
+
+	var data []TourDuration
+	if err := json.Unmarshal(b, &data); err != nil {
+		return err
+	}
+
+	*ls = data
+	return nil
 }
 
-func (td TourDurations) Value() (driver.Value, error) {
+func (td TourDuration) Value() (driver.Value, error) {
 	return json.Marshal(td)
 }
