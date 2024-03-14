@@ -11,7 +11,7 @@ app.use(cors());
 
 import encounterRouter from "./routes/encounter.routes";
 
-app.use("/encounter", encounterRouter);
+app.use("/api", encounterRouter);
 
 app.listen(port, async () => {
   console.log(`Encounter service running on port ${port}`);

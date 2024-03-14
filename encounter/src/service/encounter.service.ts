@@ -8,6 +8,23 @@ import {
   EncounterInstanceSchema,
 } from "../schema/encounterInstance.schema";
 
+
+
+
+type EncountersData = {
+    Id: number;
+    Title: string;
+    Description: string;
+    Picture: string;
+    Longitude: number;
+    Latitude: number;
+    Radius: number;
+    XpReward: number;
+    Status: number;
+    Type: number;
+    Instances: string;
+    
+};
 export default class EncounterService {
   public async getAll() {
     try {

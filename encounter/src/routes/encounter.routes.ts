@@ -16,8 +16,19 @@ router.get("/", async (req: Request, res: Response) => {
 });
 
 router.get("/dragan", async (req: Request, res: Response) => {
-  const result = await service.getAll();
-  res.send(result);
+    const result = await service.getAll();
+    res.send(result);
+})
+
+router.post('/create', async (req, res) => {
+    try {
+        const encounter = req.body;
+        const result = await service.create(encounter);
+        return res.sendStatus(200);
+    } catch (error) {
+        console.error('error while creating encounter:', error);
+        return res.sendStatus(500);
+    }
 });
 
 router.post(
