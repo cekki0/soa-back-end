@@ -36,11 +36,11 @@ type Tour struct {
 	Status      TourStatus     `json:"Status" gorm:"column:Status"`
 	Price       float64        `json:"Price" gorm:"column:Price"`
 	Distance    float64        `json:"Distance" gorm:"column:Distance"`
-	PublishDate pq.NullTime    `json:"PublishDate" gorm:"column:PublishDate;type:time"`
-	ArchiveDate pq.NullTime    `json:"ArchiveDate" gorm:"column:ArchiveDate;type:time"`
-	KeyPoints   []KeyPoint     `json:"KeyPoints"` //pogledati za kasnije kako povezati dve tabele
-	Durations   TourDurations  `json:"Durations" gorm:"column:Durations;type:jsonb"`
-	Reviews     []Review       `json:"Reviews"`
+	PublishDate pq.NullTime    `json:"PublishDate" gorm:"column:PublishDate;type:time" default:"null"`
+	ArchiveDate pq.NullTime    `json:"ArchiveDate" gorm:"column:ArchiveDate;type:time" default:"null"`
+	KeyPoints   []KeyPoint     `json:"KeyPoints" gorm:"-:all"` //pogledati za kasnije kako povezati dve tabele
+	Durations   TourDurations  `json:"Durations" gorm:"column:Durations;type:jsonb" default:"null"`
+	Reviews     []Review       `json:"Reviews" gorm:"-:all"`
 	Category    TourCategory   `json:"Category" gorm:"column:Category"`
 }
 
@@ -71,5 +71,9 @@ func (ls *TourDurations) Scan(src interface{}) error {
 }
 
 func (td TourDurations) Value() (driver.Value, error) {
-	return json.Marshal(td)
+	jsonData, err := json.Marshal(td)
+	if err != nil {
+		return nil, err
+	}
+	return jsonData, nil
 }
