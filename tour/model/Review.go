@@ -13,8 +13,8 @@ type Review struct {
 	TouristID     int            `json:"TouristId" gorm:"column:TouristId"`
 	TourVisitDate pq.NullTime    `json:"TourVisitDate" gorm:"type:time;column:TourVisitDate"`
 	CommentDate   pq.NullTime    `json:"CommentDate" gorm:"type:time;column:CommentDate"`
-	TourID        int            `json:"TourId" gorm:"column:TourId;column:TourId"`
-	Images        pq.StringArray `json:"Images" gorm:"type:text[];column:TourId"`
+	TourID        int            `json:"TourId" gorm:"column:TourId"`
+	Images        pq.StringArray `json:"Images" gorm:"type:text[];column:Images"`
 }
 
 func (Review) TableName() string {

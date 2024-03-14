@@ -70,6 +70,6 @@ func (ls *TourDurations) Scan(src interface{}) error {
 	return nil
 }
 
-func (td TourDuration) Value() (driver.Value, error) {
+func (td TourDurations) Value() (driver.Value, error) {
 	return json.Marshal(td)
 }
