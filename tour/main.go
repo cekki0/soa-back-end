@@ -51,7 +51,7 @@ func startServer(tourHandler *handler.TourHandler, reviewHandler *handler.Review
 
 	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./static")))
 	println("Server is running")
-	log.Fatal(http.ListenAndServe(":8088", router))
+	log.Fatal(http.ListenAndServe(":8080", router))
 }
 
 func main() {
