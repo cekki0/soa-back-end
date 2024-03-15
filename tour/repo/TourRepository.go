@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"fmt"
 	"tour/model"
 
 	"gorm.io/gorm"
@@ -13,9 +14,11 @@ type TourRepository struct {
 func (repo *TourRepository) FindById(id string) (model.Tour, error) {
 	tour := model.Tour{}
 	dbResult := repo.DatabaseConnection.Preload("KeyPoints").Preload("Reviews").First(&tour, `"Id" = ?`, id)
-	if dbResult != nil {
+	if dbResult.Error != nil {
+		fmt.Println("greska")
 		return tour, dbResult.Error
 	}
+	fmt.Println("usao")
 	return tour, nil
 }
 

@@ -20,7 +20,7 @@ namespace Explorer.API.Controllers.Author.TourAuthoring
 
         [Authorize(Roles = "author")]
         [HttpGet]
-        public ActionResult<PagedResult<TourResponseDto>> GetAll([FromQuery] int page, [FromQuery] int pageSize)
+        public async Task<ActionResult<PagedResult<TourResponseDto>>> GetAll([FromQuery] int page, [FromQuery] int pageSize)
         {
             var result = _tourService.GetAllPaged(page, pageSize);
             return CreateResponse(result);

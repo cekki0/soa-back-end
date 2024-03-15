@@ -15,14 +15,14 @@ type TourHandler struct {
 
 func (handler *TourHandler) FindById(writer http.ResponseWriter, req *http.Request) {
 	id := mux.Vars(req)["id"]
-	student, err := handler.TourService.FindById(id)
+	tour, err := handler.TourService.FindById(id)
 	writer.Header().Set("Content-Type", "application/json")
 	if err != nil {
 		writer.WriteHeader(http.StatusNotFound)
 		return
 	}
 	writer.WriteHeader(http.StatusOK)
-	json.NewEncoder(writer).Encode(student)
+	json.NewEncoder(writer).Encode(tour)
 }
 
 func (handler *TourHandler) Create(writer http.ResponseWriter, req *http.Request) {
@@ -42,7 +42,7 @@ func (handler *TourHandler) Create(writer http.ResponseWriter, req *http.Request
 	writer.WriteHeader(http.StatusCreated)
 }
 
-func (handler *TourHandler) FindAll(writer http.ResponseWriter, req *http.Request) {	
+func (handler *TourHandler) FindAll(writer http.ResponseWriter, req *http.Request) {
 	tours, err := handler.TourService.FindAll()
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusInternalServerError)

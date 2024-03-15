@@ -1,9 +1,12 @@
 ﻿using Explorer.BuildingBlocks.Core.UseCases;
+using Explorer.Encounters.API.Dtos;
 using Explorer.Payments.API.Public;
 using Explorer.Tours.API.Dtos;
 using Explorer.Tours.API.Public;
+using Explorer.Tours.Core.Domain.Tours;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 using System.Security.Claims;
 
 namespace Explorer.API.Controllers.Tourist.MarketPlace
@@ -29,10 +32,31 @@ namespace Explorer.API.Controllers.Tourist.MarketPlace
         }
 
         [HttpGet("tours/{tourId:long}")]
-        public ActionResult<PagedResult<TourResponseDto>> GetById(long tourId)
+        public async Task<ActionResult<PagedResult<TourResponseDto>>> GetById(long tourId)
         {
-            var result = _tourService.GetById(tourId);
-            return CreateResponse(result);
+            var adress = tourApi + "tour/" + tourId;
+            var httpResponse = await httpClient.GetAsync(adress);
+
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                Trace.WriteLine(adress);
+                var response = await httpResponse.Content.ReadFromJsonAsync<TourResponseDto>();
+                Trace.WriteLine(httpResponse.Content);
+                Trace.WriteLine(adress);
+                return Ok(response);
+            }
+            else
+            {
+                return new ContentResult
+                {
+                    StatusCode = (int)httpResponse.StatusCode,
+                    Content = await httpResponse.Content.ReadAsStringAsync(),
+                    ContentType = "text/plain"
+                };
+            }
+
+            //var result = _tourService.GetById(tourId);
+            //return CreateResponse(result);
         }
 
         [HttpGet("tours/can-be-rated/{tourId:long}")]
