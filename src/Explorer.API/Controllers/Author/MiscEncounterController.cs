@@ -20,6 +20,7 @@ namespace Explorer.API.Controllers.Author
         [HttpPost("createMisc")]
         public async Task<ActionResult<MiscEncounterResponseDto>> CreateAsync([FromBody] MiscEncounterCreateDto encounter)
         {
+            encounter.Type=2;
             var result = await httpClient.PostAsJsonAsync(encounterApi + "createMiscEncounter/author", encounter);
             
             return  new ContentResult

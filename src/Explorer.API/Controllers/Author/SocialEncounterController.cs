@@ -19,8 +19,17 @@ namespace Explorer.API.Controllers.Author
         [HttpPost("create")]
         public async Task<ActionResult<EncounterResponseDto>> CreateAsync([FromBody] SocialEncounterCreateDto encounter)
         {
-            var result = await httpClient.PostAsJsonAsync(":8089/api/createSocialEncounter/author", encounter);
-            return CreateResponse(result.ToResult());
+
+
+            encounter.Type = 0;
+            var result = await httpClient.PostAsJsonAsync(encounterApi + "createSocialEncounter/author", encounter);
+
+            return new ContentResult
+            {
+                StatusCode = (int)result.StatusCode,
+                Content = await result.Content.ReadAsStringAsync(),
+                ContentType = "text/plain"
+            };
         }
     }
 }

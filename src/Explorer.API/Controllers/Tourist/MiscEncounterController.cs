@@ -22,9 +22,15 @@ namespace Explorer.API.Controllers.Tourist
         [HttpPost("createMisc")]
         public async Task<ActionResult<MiscEncounterResponseDto>> CreateAsync([FromBody] MiscEncounterCreateDto encounter)
         {
-            encounter.Type = 2;
-            var result = await httpClient.PostAsJsonAsync(":8089/api/createMiscEncounter/tourist", encounter);
-            return CreateResponse(result.ToResult());
+            encounter.Type=2;
+            var result = await httpClient.PostAsJsonAsync(encounterApi + "createMiscEncounter/tourist", encounter);
+
+            return new ContentResult
+            {
+                StatusCode = (int)result.StatusCode,
+                Content = await result.Content.ReadAsStringAsync(),
+                ContentType = "text/plain"
+            };
         }
 
     }

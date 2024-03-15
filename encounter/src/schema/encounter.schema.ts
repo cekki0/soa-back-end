@@ -1,7 +1,5 @@
-import { object, string, TypeOf, number, z,boolean, } from "zod";
+import { object, string, TypeOf, number, z, boolean } from "zod";
 import { miscEncounters } from "../db/schema";
-
-
 
 export const EncounterSchema = object({
   title: string({
@@ -12,7 +10,7 @@ export const EncounterSchema = object({
   }),
   picture: string({
     required_error: "picture is required",
-  }).url("Invalid picture url."),
+  }),
   longitude: number({
     required_error: "Longitude is required",
   })
@@ -41,30 +39,24 @@ export const EncounterSchema = object({
     .lte(4, "Invalid encounter type value"),
 });
 
-
 export const MiscEncountersSchema = EncounterSchema.extend({
-  challengeDone:boolean(),
+  challengeDone: boolean(),
 });
 
-
 export const SocialEncounterSchema = EncounterSchema.extend({
-  peopleNumber : number({required_error:"Encounter type is required"}).gte(2),
-})
-
+  peopleNumber: number({ required_error: "Encounter type is required" }).gte(2),
+});
 
 export const HiddenEncounterSchema = EncounterSchema.extend({
-  PictureLongitude : number({required_error:"Encounter type is required"}),
-  PictureLatitude : number({required_error:"Encounter type is required"}),
+  pictureLongitude: number({ required_error: "Encounter type is required" }),
+  pictureLatitude: number({ required_error: "Encounter type is required" }),
+});
 
-})
-
-
-const HasID = z.object({id:z.number()});
+const HasID = z.object({ id: z.number() });
 const EncounterSchemaID = EncounterSchema.merge(HasID);
 const SocialEncounterSchemaID = SocialEncounterSchema.merge(HasID);
 const HiddenEncounterSchemaID = HiddenEncounterSchema.merge(HasID);
 const MiscEncounterSchemaID = MiscEncountersSchema.merge(HasID);
-
 
 export type CreateEncounterDto = z.infer<typeof EncounterSchemaID>;
 export type CreateMiscEncounterDto = z.infer<typeof MiscEncounterSchemaID>;
