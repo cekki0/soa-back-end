@@ -12,11 +12,11 @@ type KeyPoint struct {
 	TourID              int            `json:"TourId" gorm:"column:TourId"`
 	Name                string         `json:"Name" gorm:"column:Name"`
 	Description         string         `json:"Description" gorm:"column:Description"`
-	Longitude           float64        `json:"Longitude" gorm:"column:Longitude"`
-	Latitude            float64        `json:"Latitude" gorm:"column:Latitude"`
+	Longitude           float64        `json:"Longitude" gorm:"column:Longitude;type:double precision"`
+	Latitude            float64        `json:"Latitude" gorm:"column:Latitude;type:double precision"`
 	LocationAddress     string         `json:"LocationAddress" gorm:"column:LocationAddress"`
 	ImagePath           string         `json:"ImagePath" gorm:"column:ImagePath"`
-	Order               float64        `json:"Order" gorm:"column:Order"`
+	Order               int            `json:"Order" gorm:"column:Order"`
 	HaveSecret          bool           `json:"HaveSecret" gorm:"column:HaveSecret" default:"false"`
 	Secret              KeyPointSecret `json:"Secret" gorm:"type:jsonb;column:Secret"`
 	IsEncounterRequired bool           `json:"IsEncounterRequired" gorm:"column:IsEncounterRequired"`

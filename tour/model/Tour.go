@@ -31,17 +31,17 @@ type Tour struct {
 	AuthorID    int            `json:"AuthorId" gorm:"column:AuthorId"`
 	Name        string         `json:"Name" gorm:"column:Name"`
 	Description string         `json:"Description" gorm:"column:Description"`
-	Difficulty  int            `json:"Difficulty" gorm:"column:Difficulty"`
+	Difficulty  int            `json:"Difficulty" gorm:"column:Difficulty;type:integer"`
 	Tags        pq.StringArray `json:"Tags" gorm:"column:Tags;type:text[]"`
-	Status      TourStatus     `json:"Status" gorm:"column:Status"`
-	Price       float64        `json:"Price" gorm:"column:Price"`
-	Distance    float64        `json:"Distance" gorm:"column:Distance"`
+	Status      TourStatus     `json:"Status" gorm:"column:Status;type:integer"`
+	Price       float64        `json:"Price" gorm:"column:Price;type:double precision"`
+	Distance    float64        `json:"Distance" gorm:"column:Distance;type:double precision"`
 	PublishDate pq.NullTime    `json:"PublishDate" gorm:"column:PublishDate;type:time" default:"null"`
 	ArchiveDate pq.NullTime    `json:"ArchiveDate" gorm:"column:ArchiveDate;type:time" default:"null"`
 	KeyPoints   []KeyPoint     `json:"KeyPoints,omitempty"`
 	Durations   TourDurations  `json:"Durations" gorm:"column:Durations;type:jsonb"`
 	Reviews     []Review       `json:"Reviews,omitempty"`
-	Category    TourCategory   `json:"Category" gorm:"column:Category"`
+	Category    TourCategory   `json:"Category" gorm:"column:Category;type:integer"`
 }
 
 func (Tour) TableName() string {

@@ -6,7 +6,7 @@ import (
 
 type Review struct {
 	ID            int            `json:"Id" gorm:"column:Id;"`
-	Rating        int            `json:"Rating" gorm:"column:Rating"`
+	Rating        int            `json:"Rating" gorm:"column:Rating;type:integer"`
 	Comment       string         `json:"Comment" gorm:"column:Comment"`
 	TouristID     int            `json:"TouristId" gorm:"column:TouristId"`
 	TourVisitDate pq.NullTime    `json:"TourVisitDate" gorm:"type:time;column:TourVisitDate"`
