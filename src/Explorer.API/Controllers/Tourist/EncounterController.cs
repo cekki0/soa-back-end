@@ -75,40 +75,111 @@ namespace Explorer.API.Controllers.Tourist
         }
 
         [HttpPost("{id:long}/complete")]
-        public ActionResult<EncounterResponseDto> Complete(long id)
+        public async Task<ActionResult<EncounterResponseDto>> Complete(long id)
         {
             long userId = int.Parse(HttpContext.User.Claims.First(i => i.Type.Equals("id", StringComparison.OrdinalIgnoreCase)).Value);
-            var result = _encounterService.CompleteEncounter(userId, id);
-            return CreateResponse(result);
+
+            var httpResponse = await httpClient.GetAsync(encounterApi + id + "/complete/" + userId);
+
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                var response = await httpResponse.Content.ReadFromJsonAsync<EncounterInstanceResponseDto>();
+                return Ok(response);
+            }
+            else
+            {
+                return new ContentResult
+                {
+                    StatusCode = (int)httpResponse.StatusCode,
+                    Content = await httpResponse.Content.ReadAsStringAsync(),
+                    ContentType = "text/plain"
+                };
+            }
         }
 
         [HttpGet("{id:long}/cancel")]
-        public ActionResult<EncounterResponseDto> Cancel(long id)
+        public async Task<ActionResult<EncounterResponseDto>> Cancel(long id)
         {
             long userId = int.Parse(HttpContext.User.Claims.First(i => i.Type.Equals("id", StringComparison.OrdinalIgnoreCase)).Value);
-            var result = _encounterService.CancelEncounter(userId, id);
-            return CreateResponse(result);
+            var httpResponse = await httpClient.GetAsync(encounterApi + id + "/cancel/" + userId);
+
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                var response = await httpResponse.Content.ReadFromJsonAsync<EncounterResponseDto>();
+                return Ok(response);
+            }
+            else
+            {
+                return new ContentResult
+                {
+                    StatusCode = (int)httpResponse.StatusCode,
+                    Content = await httpResponse.Content.ReadAsStringAsync(),
+                    ContentType = "text/plain"
+                };
+            }
         }
 
         [HttpGet("{id:long}")]
-        public ActionResult<EncounterResponseDto> Get(long id)
+        public async Task<ActionResult<EncounterResponseDto>> Get(long id)
         {
-            var result = _encounterService.Get(id);
-            return CreateResponse(result);
+            var httpResponse = await httpClient.GetAsync(encounterApi + id);
+
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                var response = await httpResponse.Content.ReadFromJsonAsync<EncounterResponseDto>();
+                return Ok(response);
+            }
+            else
+            {
+                return new ContentResult
+                {
+                    StatusCode = (int)httpResponse.StatusCode,
+                    Content = await httpResponse.Content.ReadAsStringAsync(),
+                    ContentType = "text/plain"
+                };
+            }
         }
 
         [HttpGet]
-        public ActionResult<PagedResult<EncounterResponseDto>> GetAll([FromQuery] int page, [FromQuery] int pageSize)
+        public async Task<ActionResult<PagedResult<EncounterResponseDto>>> GetAll([FromQuery] int page, [FromQuery] int pageSize)
         {
-            var result = _encounterService.GetPaged(page, pageSize);
-            return CreateResponse(result);
+            var httpResponse = await httpClient.GetAsync(encounterApi);
+
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                var response = await httpResponse.Content.ReadFromJsonAsync<EncounterResponseDto[]>();
+                return Ok(new PagedResult<EncounterResponseDto>(response.ToList(), response.Count()));
+            }
+            else
+            {
+                return new ContentResult
+                {
+                    StatusCode = (int)httpResponse.StatusCode,
+                    Content = await httpResponse.Content.ReadAsStringAsync(),
+                    ContentType = "text/plain"
+                };
+            }
         }
 
         [HttpPost("in-range-of")]
-        public ActionResult<PagedResult<EncounterResponseDto>> GetAllInRangeOf([FromBody] UserPositionWithRangeDto position, [FromQuery] int page, [FromQuery] int pageSize)
+        public async Task<ActionResult<PagedResult<EncounterResponseDto>>> GetAllInRangeOf([FromBody] UserPositionWithRangeDto position, [FromQuery] int page, [FromQuery] int pageSize)
         {
-            var result = _encounterService.GetAllInRangeOf(position.Range, position.Longitude, position.Latitude, page, pageSize);
-            return CreateResponse(result);
+            var httpResponse = await httpClient.PostAsJsonAsync(encounterApi + "inRange", position);
+
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                var response = await httpResponse.Content.ReadFromJsonAsync<EncounterResponseDto[]>();
+                return Ok(new PagedResult<EncounterResponseDto>(response.ToList(), response.Count()));
+            }
+            else
+            {
+                return new ContentResult
+                {
+                    StatusCode = (int)httpResponse.StatusCode,
+                    Content = await httpResponse.Content.ReadAsStringAsync(),
+                    ContentType = "text/plain"
+                };
+            }
         }
 
 
@@ -116,13 +187,6 @@ namespace Explorer.API.Controllers.Tourist
         public ActionResult<PagedResult<EncounterResponseDto>> GetAllDoneByUser(int currentUserId, [FromQuery] int page, [FromQuery] int pageSize)
         {
             var result = _encounterService.GetAllDoneByUser(currentUserId, page, pageSize);
-            return CreateResponse(result);
-        }
-
-        [HttpGet("active")]
-        public ActionResult<PagedResult<EncounterResponseDto>> GetActive([FromQuery] int page, [FromQuery] int pageSize)
-        {
-            var result = _encounterService.GetActive(page, pageSize);
             return CreateResponse(result);
         }
 
@@ -140,12 +204,25 @@ namespace Explorer.API.Controllers.Tourist
         }
 
         [HttpGet("progress")]
-        public ActionResult<TouristProgressResponseDto> GetProgress()
+        public async Task<ActionResult<TouristProgressResponseDto>> GetProgress()
         {
             long userId = int.Parse(HttpContext.User.Claims.First(i => i.Type.Equals("id", StringComparison.OrdinalIgnoreCase)).Value);
-            var result = _progressService.GetByUserId(userId);
+            var httpResponse = await httpClient.GetAsync(encounterApi + "progress/" + userId);
 
-            return CreateResponse(result);
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                var response = await httpResponse.Content.ReadFromJsonAsync<TouristProgressResponseDto>();
+                return Ok(response);
+            }
+            else
+            {
+                return new ContentResult
+                {
+                    StatusCode = (int)httpResponse.StatusCode,
+                    Content = await httpResponse.Content.ReadAsStringAsync(),
+                    ContentType = "text/plain"
+                };
+            }
         }
     }
 }

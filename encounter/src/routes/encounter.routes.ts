@@ -3,9 +3,12 @@ import EncounterService from "../service/encounter.service";
 import validateRequest from "../middleware/validateRequest";
 import {
   CreateEncounterDto,
+  EncounterDto,
   EncounterSchema,
 } from "../schema/encounter.schema";
 import {
+  PositionWithRangeDto,
+  PositionWithRangeSchema,
   TouristPoisitionDto,
   TouristPositionSchema,
 } from "../schema/touristPosition.schema";
@@ -16,7 +19,7 @@ const service = new EncounterService();
 
 router.get("/", async (req: Request, res: Response) => {
   const result = await service.getAll();
-  res.send(result);
+  res.json(result);
 });
 
 router.get("/dragan", async (req: Request, res: Response) => {
@@ -92,12 +95,72 @@ router.post(
       req.body.latitude
     );
 
-    if (result.success) {
-      return res.json(result.value);
-    } else {
-      return res.status(400).json({ message: result.message });
-    }
+    if (result.success) return res.json(result.value);
+
+    return res.status(400).json({ message: result.message });
   }
 );
+
+router.get(
+  "/:encounterId/complete/:userId",
+  async (req: Request, res: Response) => {
+    const encounterId = Number.parseInt(req.params.encounterId);
+    const userId = Number.parseInt(req.params.userId);
+
+    const result = await service.completeEncounter(userId, encounterId);
+
+    if (result.success) return res.json(result.value);
+
+    return res.status(400).json({ message: result.message });
+  }
+);
+
+router.get(
+  "/:encounterId/cancel/:userId",
+  async (req: Request, res: Response) => {
+    const encounterId = Number.parseInt(req.params.encounterId);
+    const userId = Number.parseInt(req.params.userId);
+
+    const result = await service.cancelEncounter(userId, encounterId);
+
+    if (result.success) return res.json(result.value);
+
+    return res.status(400).json({ message: result.message });
+  }
+);
+
+router.get("/:encounterId", async (req: Request, res: Response) => {
+  try {
+    const encounter = await service.getById(
+      Number.parseInt(req.params.encounterId)
+    );
+    return res.json(encounter);
+  } catch (error: any) {
+    return res.status(404).json({ message: error.message });
+  }
+});
+
+router.post(
+  "/inRange",
+  validateRequest(PositionWithRangeSchema),
+  async (req: Request<{}, {}, PositionWithRangeDto>, res: Response) => {
+    const result = await service.getAllInRange(req.body);
+
+    if (result.success) return res.json(result.value);
+
+    return res.status(400).json({ message: result.message });
+  }
+);
+
+router.get("/progress/:userId", async (req: Request, res: Response) => {
+  try {
+    const progress = await service.getProgress(
+      Number.parseInt(req.params.userId)
+    );
+    return res.json(progress);
+  } catch (error: any) {
+    return res.status(404).json({ message: error.message });
+  }
+});
 
 export default router;

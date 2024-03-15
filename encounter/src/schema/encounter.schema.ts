@@ -1,4 +1,8 @@
 import { object, string, TypeOf, number, z } from "zod";
+import {
+  EncounterInstanceDto,
+  EncounterInstanceSchema,
+} from "./encounterInstance.schema";
 
 export const EncounterSchema = object({
   title: string({
@@ -36,11 +40,18 @@ export const EncounterSchema = object({
   })
     .gte(0, "Invalid encounter type value")
     .lte(4, "Invalid encounter type value"),
+  instances: EncounterInstanceSchema.array().optional().nullable(),
 });
+
+const hasId = z.object({ id: number() });
 
 export const ResponseEncounterSchema = EncounterSchema.omit({
   encounterStatus: true,
+  instances: true,
 });
 
+export const EncounterWithIdSchema = EncounterSchema.merge(hasId);
+
+export type EncounterDto = z.infer<typeof EncounterWithIdSchema>;
 export type CreateEncounterDto = z.infer<typeof EncounterSchema>;
 export type ResponseEncounterDto = z.infer<typeof ResponseEncounterSchema>;

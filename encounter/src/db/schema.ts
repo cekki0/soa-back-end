@@ -64,3 +64,5 @@ export const touristProgress = encounterSchema.table("TouristProgress", {
   xp: integer("Xp").notNull(),
   level: integer("Level").notNull(),
 });
+
+export type TouristProgress = typeof touristProgress.$inferInsert;

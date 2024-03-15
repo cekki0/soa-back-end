@@ -1,8 +1,11 @@
 import { eq } from "drizzle-orm";
-import { encounters, touristProgress } from "../db/schema";
+import { TouristProgress, encounters, touristProgress } from "../db/schema";
 import db from "../utils/db-connection";
 import {
   CreateEncounterDto,
+  EncounterDto,
+  EncounterSchema,
+  EncounterWithIdSchema,
   ResponseEncounterDto,
   ResponseEncounterSchema,
 } from "../schema/encounter.schema";
@@ -12,6 +15,7 @@ import {
   EncounterInstanceSchema,
 } from "../schema/encounterInstance.schema";
 import { error } from "console";
+import { PositionWithRangeDto } from "../schema/touristPosition.schema";
 
 type EncountersData = {
   Id: number;
@@ -45,19 +49,6 @@ export default class EncounterService {
       return await createEncounter(encounterData);
     } catch (error) {
       console.log(error);
-    }
-  }
-
-  public async getById(encounterId: number) {
-    try {
-      const result = await db
-        .select()
-        .from(encounters)
-        .where(eq(encounters.id, encounterId));
-      return result;
-    } catch (error) {
-      console.log(error);
-      throw error;
     }
   }
 
@@ -126,25 +117,23 @@ export default class EncounterService {
       }
 
       // Activate encounter if possible
-      const encounterResult = await db
-        .select()
-        .from(encounters)
-        .where(eq(encounters.id, encounterId));
-      if (!encounterResult) throw error("Encounter doesn't exist.");
-
-      const encounter = encounterResult[0];
+      const encounter = await this.getById(encounterId);
 
       if (encounter.encounterStatus != 0)
-        throw error("Encounter is not yet published.");
-      if (hasUserActivatedEncounter(encounter, userId))
-        throw error("User has already activated/completed this encounter.");
-      if (!isUserInRange(encounter, longitude, latitude))
-        throw error("User is not close enough to the encounter.");
+        throw new Error("Encounter is not yet published.");
+      if (this.hasUserActivatedEncounter(encounter, userId))
+        throw new Error("User has already activated/completed this encounter.");
+      if (!this.isUserInRange(encounter, longitude, latitude))
+        throw new Error("User is not close enough to the encounter.");
 
       const encounterInstance: EncounterInstanceDto = {
         userId: userId,
         status: 0,
       };
+
+      if (encounter.instances == null) {
+        encounter.instances = [];
+      }
 
       encounter.instances?.push(encounterInstance);
 
@@ -152,7 +141,8 @@ export default class EncounterService {
         .update(encounters)
         .set(encounter)
         .where(eq(encounters.id, encounterId));
-      if (!updateResult) throw error("Failed to update encounter instances.");
+      if (!updateResult)
+        throw new Error("Failed to update encounter instances.");
       result.value = ResponseEncounterSchema.parse(encounter);
       result.success = true;
     } catch (error: any) {
@@ -161,64 +151,208 @@ export default class EncounterService {
     }
     return result;
   }
-}
-function hasUserActivatedEncounter(
-  encounter: {
-    id: number;
-    title: string;
-    description: string;
-    picture: string;
-    longitude: number;
-    latitude: number;
-    radius: number;
-    xpReward: number;
-    encounterStatus: number;
-    encounterType: number;
-    instances:
-      | { userId: number; status: number; completionTime?: Date | undefined }[]
-      | null;
-  },
-  userId: number
-): boolean {
-  return encounter.instances?.findIndex((x) => x.userId == userId) != -1;
-}
 
-function isUserInRange(
-  encounter: {
-    id: number;
-    title: string;
-    description: string;
-    picture: string;
-    longitude: number;
-    latitude: number;
-    radius: number;
-    xpReward: number;
-    encounterStatus: number;
-    encounterType: number;
-    instances:
-      | { userId: number; status: number; completionTime?: Date | undefined }[]
-      | null;
-  },
-  longitude: number,
-  latitude: number
-) {
-  const earthRadius = 6371000;
-  const latitude1 = (encounter.latitude * Math.PI) / 180;
-  const longitude1 = (encounter.longitude * Math.PI) / 180;
-  const latitude2 = (latitude * Math.PI) / 180;
-  const longitude2 = (longitude * Math.PI) / 180;
+  public async completeEncounter(
+    userId: number,
+    encounterId: number
+  ): Promise<Result<TouristProgress>> {
+    const result = new Result<TouristProgress>();
+    try {
+      const encounter = await this.getById(encounterId);
+      // Complete instance
+      const instanceIndex = encounter.instances?.findIndex(
+        (x) => x.userId == userId
+      );
+      if (instanceIndex == -1 || instanceIndex === undefined)
+        throw new Error("User hasn't started this encounter.");
+      const instance = encounter.instances![instanceIndex];
+      instance.status = 1;
+      instance.completionTime = new Date();
 
-  const latitudeDistance = latitude2 - latitude1;
-  const longitudeDistance = longitude2 - longitude1;
+      encounter.instances![instanceIndex] = instance;
 
-  const a =
-    Math.sin(latitudeDistance / 2) * Math.sin(latitudeDistance / 2) +
-    Math.cos(latitude1) *
-      Math.cos(latitude2) *
-      Math.sin(longitudeDistance / 2) *
-      Math.sin(longitudeDistance / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  const distance = earthRadius * c;
+      // Give xp to user
+      const progress = (
+        await db
+          .select()
+          .from(touristProgress)
+          .where(eq(touristProgress.userId, userId))
+      )[0];
+      this.addXp(progress, encounter.xpReward);
 
-  return distance < encounter.radius;
+      await db
+        .update(encounters)
+        .set(encounter)
+        .where(eq(encounters.id, encounterId));
+      await db
+        .update(touristProgress)
+        .set(progress)
+        .where(eq(touristProgress.userId, userId));
+
+      result.value = progress;
+      result.success = true;
+    } catch (error: any) {
+      console.error(error);
+      result.message = error.message;
+    }
+
+    return result;
+  }
+
+  public async cancelEncounter(
+    userId: number,
+    encounterId: number
+  ): Promise<Result<ResponseEncounterDto>> {
+    const result = new Result<ResponseEncounterDto>();
+    try {
+      const encounter = await this.getById(encounterId);
+
+      if (!this.hasUserActivatedEncounter(encounter, userId))
+        throw new Error("User has not activated this encounter.");
+
+      const instanceIndex = encounter.instances?.findIndex(
+        (x) => x.userId == userId
+      )!;
+
+      if (encounter.instances![instanceIndex].status == 1)
+        throw new Error("User has already completed this encounter.");
+
+      encounter.instances!.splice(instanceIndex, 1);
+
+      await db
+        .update(encounters)
+        .set(encounter)
+        .where(eq(encounters.id, encounterId));
+
+      result.value = await ResponseEncounterSchema.parse(encounter);
+      result.success = true;
+    } catch (error: any) {
+      console.error(error);
+      result.message = error.message;
+    }
+    return result;
+  }
+
+  public async getById(encounterId: number): Promise<EncounterDto> {
+    const encounterResult = await db
+      .select()
+      .from(encounters)
+      .where(eq(encounters.id, encounterId));
+    if (!encounterResult || encounterResult.length == 0)
+      throw new Error("Encounter doesn't exist.");
+    return await EncounterWithIdSchema.parse(encounterResult[0]);
+  }
+
+  public async getAllInRange(
+    position: PositionWithRangeDto
+  ): Promise<Result<EncounterDto[]>> {
+    const result = new Result<EncounterDto[]>();
+    try {
+      const encounters = await this.getAll();
+      const filteredEncounters = encounters?.filter((x) =>
+        this.isEncounterInRangeOf(
+          x,
+          position.range,
+          position.longitude,
+          position.latitude
+        )
+      );
+
+      result.value = filteredEncounters!;
+      result.success = true;
+    } catch (error: any) {
+      console.error(error);
+      result.message = error.message;
+    }
+    return result;
+  }
+
+  public async getProgress(userId: number): Promise<TouristProgress> {
+    const progress = (
+      await db
+        .select()
+        .from(touristProgress)
+        .where(eq(touristProgress.userId, userId))
+    )[0];
+    return progress;
+  }
+
+  private isEncounterInRangeOf(
+    encounter: EncounterDto,
+    range: number,
+    longitude: number,
+    latitude: number
+  ): boolean {
+    if (longitude < -180 || longitude > 180)
+      throw new Error("Invalid Longitude");
+    if (latitude < -90 || latitude > 90) throw new Error("Invalid Latitude");
+
+    const earthRadius: number = 6371000;
+    const latitude1: number = (encounter.latitude * Math.PI) / 180;
+    const longitude1: number = (encounter.longitude * Math.PI) / 180;
+    const latitude2: number = (latitude * Math.PI) / 180;
+    const longitude2: number = (longitude * Math.PI) / 180;
+
+    const latitudeDistance: number = latitude2 - latitude1;
+    const longitudeDistance: number = longitude2 - longitude1;
+
+    const a: number =
+      Math.sin(latitudeDistance / 2) * Math.sin(latitudeDistance / 2) +
+      Math.cos(latitude1) *
+        Math.cos(latitude2) *
+        Math.sin(longitudeDistance / 2) *
+        Math.sin(longitudeDistance / 2);
+    const c: number = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distance: number = earthRadius * c;
+
+    return distance < range;
+  }
+
+  private addXp(progress: TouristProgress, xpReward: number) {
+    while (xpReward > 0) {
+      const xpNeeded = 100 - progress.xp;
+      if (xpReward > xpNeeded) {
+        progress.xp = 0;
+        xpReward -= xpNeeded;
+        progress.level++;
+      } else {
+        progress.xp += xpReward;
+        xpReward = 0;
+      }
+    }
+  }
+
+  private hasUserActivatedEncounter(
+    encounter: EncounterDto,
+    userId: number
+  ): boolean {
+    const index = encounter.instances?.findIndex((x) => x.userId == userId);
+    return index != -1 && index != undefined;
+  }
+
+  private isUserInRange(
+    encounter: EncounterDto,
+    longitude: number,
+    latitude: number
+  ) {
+    const earthRadius = 6371000;
+    const latitude1 = (encounter.latitude * Math.PI) / 180;
+    const longitude1 = (encounter.longitude * Math.PI) / 180;
+    const latitude2 = (latitude * Math.PI) / 180;
+    const longitude2 = (longitude * Math.PI) / 180;
+
+    const latitudeDistance = latitude2 - latitude1;
+    const longitudeDistance = longitude2 - longitude1;
+
+    const a =
+      Math.sin(latitudeDistance / 2) * Math.sin(latitudeDistance / 2) +
+      Math.cos(latitude1) *
+        Math.cos(latitude2) *
+        Math.sin(longitudeDistance / 2) *
+        Math.sin(longitudeDistance / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distance = earthRadius * c;
+
+    return distance < encounter.radius;
+  }
 }
