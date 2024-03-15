@@ -23,10 +23,10 @@ namespace Explorer.API.Controllers.Administrator
         }
 
         [HttpPost]
-        public ActionResult<EncounterResponseDto> Create([FromBody] EncounterCreateDto encounter)
+        public async Task<ActionResult<EncounterResponseDto>> CreateAsync([FromBody] EncounterCreateDto encounter)
         {
-            var result = _encounterService.Create(encounter);
-            return CreateResponse(result);
+            var result = await httpClient.PostAsJsonAsync(":8089/api/create", encounter);
+            return CreateResponse(result.ToResult());
         }
 
         [HttpPut("{id:long}")]

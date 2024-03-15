@@ -1,38 +1,34 @@
 import { eq } from "drizzle-orm";
-import { TouristProgress, encounters, touristProgress } from "../db/schema";
-import db from "../utils/db-connection";
-import {
-  CreateEncounterDto,
-  EncounterDto,
-  EncounterSchema,
-  EncounterWithIdSchema,
-  ResponseEncounterDto,
-  ResponseEncounterSchema,
-} from "../schema/encounter.schema";
 import Result from "../utils/Result";
 import {
   EncounterInstanceDto,
   EncounterInstanceSchema,
 } from "../schema/encounterInstance.schema";
-import { error } from "console";
 import {
   PositionWithRangeDto,
   TouristPoisitionDto,
 } from "../schema/touristPosition.schema";
+import {
+  encounters,
+  hiddenLocationEncounters,
+  miscEncounters,
+  socialEcnounters,
+  touristProgress,
+  TouristProgress,
+} from "../db/schema";
+import db from "../utils/db-connection";
+import {
+  CreateEncounterDto,
+  CreateHiddenEncounterDto,
+  CreateMiscEncounterDto,
+  CreateSocialEncounterDto,
+  EncounterDto,
+  EncounterSchema,
+  EncounterSchemaID,
+  ResponseEncounterDto,
+  ResponseEncounterSchema,
+} from "../schema/encounter.schema";
 
-type EncountersData = {
-  Id: number;
-  Title: string;
-  Description: string;
-  Picture: string;
-  Longitude: number;
-  Latitude: number;
-  Radius: number;
-  XpReward: number;
-  Status: number;
-  Type: number;
-  Instances: string;
-};
 export default class EncounterService {
   public async getAll() {
     try {
@@ -43,7 +39,151 @@ export default class EncounterService {
     }
   }
 
-  public async create(encounterData: CreateEncounterDto) {
+  public async createMiscEncounterAuthor(
+    encounterData: CreateMiscEncounterDto
+  ) {
+    try {
+      const createEncounter = async (encounter: CreateEncounterDto) => {
+        const result = await db
+          .insert(encounters)
+          .values(encounter)
+          .returning({ id: encounters.id });
+
+        return db.insert(miscEncounters).values({
+          id: result[0].id,
+          challengeDone: encounterData.challengeDone,
+        });
+      };
+
+      return await createEncounter(encounterData);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  public async createMiscEncounterTourist(
+    encounterData: CreateMiscEncounterDto
+  ) {
+    try {
+      const result1 = await db
+        .select()
+        .from(touristProgress)
+        .where(eq(touristProgress.id, encounterData.id));
+      if (result1[0].level >= 10) {
+        const createEncounter = async (encounter: CreateEncounterDto) => {
+          const result = await db
+            .insert(encounters)
+            .values(encounter)
+            .returning({ id: encounters.id });
+
+          return db.insert(miscEncounters).values({
+            id: result[0].id,
+            challengeDone: encounterData.challengeDone,
+          });
+        };
+        return await createEncounter(encounterData);
+      } else {
+        console.log("dragan");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  public async createSocialEncounterTourist(
+    encounterData: CreateSocialEncounterDto
+  ) {
+    console.log(encounterData.peopleNumber);
+    try {
+      console.log("jjj");
+
+      const createEncounter = async (encounter: CreateEncounterDto) => {
+        const result = await db
+          .insert(encounters)
+          .values(encounter)
+          .returning({ id: encounters.id });
+
+        return db.insert(socialEcnounters).values({
+          id: result[0].id,
+          peopleNumber: encounterData.peopleNumber,
+        });
+      };
+
+      return await createEncounter(encounterData);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  public async createSocialEncounterAuthor(
+    encounterData: CreateSocialEncounterDto
+  ) {
+    try {
+      const createEncounter = async (encounter: CreateEncounterDto) => {
+        const result = await db
+          .insert(encounters)
+          .values(encounter)
+          .returning({ id: encounters.id });
+
+        return db.insert(socialEcnounters).values({
+          id: result[0].id,
+          peopleNumber: encounterData.peopleNumber,
+        });
+      };
+
+      return await createEncounter(encounterData);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  public async createHiddenEncounterTourist(
+    encounterData: CreateHiddenEncounterDto
+  ) {
+    try {
+      const createEncounter = async (encounter: CreateEncounterDto) => {
+        const result = await db
+          .insert(encounters)
+          .values(encounter)
+          .returning({ id: encounters.id });
+
+        return db.insert(hiddenLocationEncounters).values({
+          id: result[0].id,
+          pictureLatitude: encounterData.pictureLatitude,
+          pictureLongitude: encounterData.pictureLongitude,
+        });
+      };
+
+      return await createEncounter(encounterData);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  public async createHiddenEncounterAuthor(
+    encounterData: CreateHiddenEncounterDto
+  ) {
+    try {
+      const createEncounter = async (encounter: CreateEncounterDto) => {
+        const result = await db
+          .insert(encounters)
+          .values(encounter)
+          .returning({ id: encounters.id });
+
+        return db.insert(hiddenLocationEncounters).values({
+          id: result[0].id,
+          pictureLatitude: encounterData.pictureLatitude,
+          pictureLongitude: encounterData.pictureLongitude,
+        });
+      };
+
+      return await createEncounter(encounterData);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  public async createEncounter(encounterData: CreateEncounterDto) {
     try {
       const createEncounter = async (encounter: CreateEncounterDto) => {
         return db.insert(encounters).values(encounter);
@@ -255,7 +395,7 @@ export default class EncounterService {
       .where(eq(encounters.id, encounterId));
     if (!encounterResult || encounterResult.length == 0)
       throw new Error("Encounter doesn't exist.");
-    return await EncounterWithIdSchema.parse(encounterResult[0]);
+    return await EncounterSchemaID.parse(encounterResult[0]);
   }
 
   public async getAllInRange(

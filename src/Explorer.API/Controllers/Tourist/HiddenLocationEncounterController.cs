@@ -45,17 +45,18 @@ namespace Explorer.API.Controllers.Tourist
         }
 
         [HttpPost("create")]
-        public ActionResult<HiddenLocationEncounterResponseDto> Create([FromBody] HiddenLocationEncounterCreateDto encounter)
+        public async Task<ActionResult<HiddenLocationEncounterResponseDto>> CreateAsync([FromBody] HiddenLocationEncounterCreateDto encounter)
         {
-            long userId = int.Parse(HttpContext.User.Claims.First(i => i.Type.Equals("id", StringComparison.OrdinalIgnoreCase)).Value);
-            var progress = _touristProgressService.GetByUserId(userId);
-            if (progress.Value.Level >= 10)
-            {
-                var result = _encounterService.CreateHiddenLocationEncounter(encounter);
-                return CreateResponse(result);
+            
+            encounter.Type = 1;
+            var result = await httpClient.PostAsJsonAsync(encounterApi + "createHiddenEncounter/tourist", encounter);
 
-            }
-            return CreateResponse(Result.Fail("Tourist level is not high enough."));
+            return new ContentResult
+            {
+                StatusCode = (int)result.StatusCode,
+                Content = await result.Content.ReadAsStringAsync(),
+                ContentType = "text/plain"
+            };
         }
     }
 }

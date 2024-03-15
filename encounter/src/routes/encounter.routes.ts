@@ -3,8 +3,13 @@ import EncounterService from "../service/encounter.service";
 import validateRequest from "../middleware/validateRequest";
 import {
   CreateEncounterDto,
-  EncounterDto,
+  CreateMiscEncounterDto,
   EncounterSchema,
+  MiscEncountersSchema,
+  SocialEncounterSchema,
+  HiddenEncounterSchema,
+  CreateSocialEncounterDto,
+  CreateHiddenEncounterDto,
 } from "../schema/encounter.schema";
 import {
   PositionWithRangeDto,
@@ -27,24 +32,13 @@ router.get("/dragan", async (req: Request, res: Response) => {
   res.send(result);
 });
 
-router.post("/create", async (req, res) => {
-  try {
-    const encounter = req.body;
-    const result = await service.create(encounter);
-    return res.sendStatus(200);
-  } catch (error) {
-    console.error("error while creating encounter:", error);
-    return res.sendStatus(500);
-  }
-});
-
 router.post(
   "/",
   validateRequest(EncounterSchema),
   async (req: Request<{}, {}, CreateEncounterDto>, res: Response) => {
     try {
       const encounter = req.body;
-      const result = await service.create(encounter);
+      const result = await service.createEncounter(encounter);
       return res.status(200).json(result);
     } catch (error) {
       console.error("error while creating encounter:", error);
@@ -71,6 +65,22 @@ router.get(
       return res
         .status(500)
         .json({ message: "Error fetching encounter instances" });
+    }
+  }
+);
+router.post(
+  "/createMiscEncounter/author",
+  validateRequest(MiscEncountersSchema),
+  async (req: Request<{}, {}, CreateMiscEncounterDto>, res: Response) => {
+    try {
+      const encounter = req.body;
+      const result = await service.createMiscEncounterAuthor(encounter);
+      return res.status(200).json(result);
+    } catch (error) {
+      console.error("error while creating misc encounter author:", error);
+      return res
+        .status(500)
+        .json({ message: "error while creating misc encounter" });
     }
   }
 );
@@ -176,6 +186,90 @@ router.post(
     );
     if (result.success) return res.sendStatus(200);
     return res.sendStatus(418);
+  }
+);
+router.post(
+  "/createMiscEncounter/tourist",
+  validateRequest(MiscEncountersSchema),
+  async (req: Request<{}, {}, CreateMiscEncounterDto>, res: Response) => {
+    try {
+      const encounter = req.body;
+      const result = await service.createMiscEncounterTourist(encounter);
+      return res.status(200).json(result);
+    } catch (error) {
+      console.error("error while creating misc encounter tourist:", error);
+      return res
+        .status(500)
+        .json({ message: "error while creating misc encounter" });
+    }
+  }
+);
+
+router.post(
+  "/createSocialEncounter/author",
+  validateRequest(SocialEncounterSchema),
+  async (req: Request<{}, {}, CreateSocialEncounterDto>, res: Response) => {
+    try {
+      const encounter = req.body;
+      const result = await service.createSocialEncounterAuthor(encounter);
+      return res.status(200).json(result);
+    } catch (error) {
+      console.error("error while creating social encounter author:", error);
+      return res
+        .status(500)
+        .json({ message: "error while creating social encounter" });
+    }
+  }
+);
+
+router.post(
+  "/createSocialEncounter/tourist",
+  validateRequest(SocialEncounterSchema),
+  async (req: Request<{}, {}, CreateSocialEncounterDto>, res: Response) => {
+    try {
+      const encounter = req.body;
+      const result = await service.createSocialEncounterTourist(encounter);
+      return res.status(200).json(result);
+    } catch (error) {
+      console.error("error while creating social encounter tourist:", error);
+      return res
+        .status(500)
+        .json({ message: "error while creating social encounter" });
+    }
+  }
+);
+
+router.post(
+  "/createHiddenEncounter/tourist",
+  validateRequest(HiddenEncounterSchema),
+  async (req: Request<{}, {}, CreateHiddenEncounterDto>, res: Response) => {
+    try {
+      const encounter = req.body;
+      const result = await service.createHiddenEncounterTourist(encounter);
+      return res.status(200).json(result);
+    } catch (error) {
+      console.error("error while creating hidden encounter: tourist", error);
+      return res
+        .status(500)
+        .json({ message: "error while creating hidden encounter" });
+    }
+  }
+);
+
+router.post(
+  "/createHiddenEncounter/author",
+  validateRequest(HiddenEncounterSchema),
+  async (req: Request<{}, {}, CreateHiddenEncounterDto>, res: Response) => {
+    try {
+      const encounter = req.body;
+      const result = await service.createHiddenEncounterAuthor(encounter);
+      return res.status(200).json(result);
+    } catch (error) {
+      console.error("error while creating hidden encounter autho:", error);
+      return res
+        .status(500)
+        .json({ message: "error while creating hidden encounter" });
+    }
   }
 );
 

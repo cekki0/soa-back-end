@@ -19,8 +19,15 @@ namespace Explorer.API.Controllers.Author
         [HttpPost("create")]
         public async Task<ActionResult<HiddenLocationEncounterResponseDto>> Create([FromBody] HiddenLocationEncounterCreateDto encounter)
         {
-            var result = await httpClient.PostAsJsonAsync(":8089/api/create", encounter);
-            return CreateResponse(result.ToResult());
+            encounter.Type = 1;
+            var result = await httpClient.PostAsJsonAsync(encounterApi + "createHiddenEncounter/author", encounter);
+
+            return new ContentResult
+            {
+                StatusCode = (int)result.StatusCode,
+                Content = await result.Content.ReadAsStringAsync(),
+                ContentType = "text/plain"
+            };
 
         }
 

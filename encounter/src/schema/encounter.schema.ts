@@ -1,8 +1,9 @@
-import { object, string, TypeOf, number, z } from "zod";
+import { object, string, TypeOf, number, z, boolean } from "zod";
 import {
   EncounterInstanceDto,
   EncounterInstanceSchema,
 } from "./encounterInstance.schema";
+import { miscEncounters } from "../db/schema";
 
 export const EncounterSchema = object({
   title: string({
@@ -12,8 +13,8 @@ export const EncounterSchema = object({
     required_error: "Description is required",
   }),
   picture: string({
-    required_error: "Picture is required",
-  }).url("Invalid picture url."),
+    required_error: "picture is required",
+  }),
   longitude: number({
     required_error: "Longitude is required",
   })
@@ -43,15 +44,34 @@ export const EncounterSchema = object({
   instances: EncounterInstanceSchema.array().optional().nullable(),
 });
 
-const hasId = z.object({ id: number() });
+const HasID = z.object({ id: z.number() });
 
 export const ResponseEncounterSchema = EncounterSchema.omit({
   status: true,
   instances: true,
 });
+export const MiscEncountersSchema = EncounterSchema.extend({
+  challengeDone: boolean(),
+});
 
-export const EncounterWithIdSchema = EncounterSchema.merge(hasId);
+export const SocialEncounterSchema = EncounterSchema.extend({
+  peopleNumber: number({ required_error: "Encounter type is required" }).gte(2),
+});
 
-export type EncounterDto = z.infer<typeof EncounterWithIdSchema>;
-export type CreateEncounterDto = z.infer<typeof EncounterSchema>;
+export const HiddenEncounterSchema = EncounterSchema.extend({
+  pictureLongitude: number({ required_error: "Encounter type is required" }),
+  pictureLatitude: number({ required_error: "Encounter type is required" }),
+});
+
+export type EncounterDto = z.infer<typeof EncounterSchemaID>;
 export type ResponseEncounterDto = z.infer<typeof ResponseEncounterSchema>;
+
+export const EncounterSchemaID = EncounterSchema.merge(HasID);
+const SocialEncounterSchemaID = SocialEncounterSchema.merge(HasID);
+const HiddenEncounterSchemaID = HiddenEncounterSchema.merge(HasID);
+const MiscEncounterSchemaID = MiscEncountersSchema.merge(HasID);
+
+export type CreateEncounterDto = z.infer<typeof EncounterSchemaID>;
+export type CreateMiscEncounterDto = z.infer<typeof MiscEncounterSchemaID>;
+export type CreateSocialEncounterDto = z.infer<typeof SocialEncounterSchemaID>;
+export type CreateHiddenEncounterDto = z.infer<typeof HiddenEncounterSchemaID>;
