@@ -26,7 +26,7 @@ const (
 )
 
 type Tour struct {
-	Id          int            `json:"Id" gorm:"column:Id;primaryKey"`
+	ID          int            `json:"Id" gorm:"column:Id;primaryKey"`
 	IsDeleted   bool           `json:"IsDeleted" gorm:"column:IsDeleted" default:"false"`
 	AuthorID    int            `json:"AuthorId" gorm:"column:AuthorId"`
 	Name        string         `json:"Name" gorm:"column:Name"`
@@ -38,9 +38,9 @@ type Tour struct {
 	Distance    float64        `json:"Distance" gorm:"column:Distance"`
 	PublishDate pq.NullTime    `json:"PublishDate" gorm:"column:PublishDate;type:time" default:"null"`
 	ArchiveDate pq.NullTime    `json:"ArchiveDate" gorm:"column:ArchiveDate;type:time" default:"null"`
-	KeyPoints   []KeyPoint     `json:"KeyPoints,omitempty" gorm:"-"`
-	Durations   TourDurations  `json:"Durations" gorm:"column:Durations;type:jsonb" default:"[]"`
-	Reviews     []Review       `json:"Reviews,omitempty" gorm:"-"`
+	KeyPoints   []KeyPoint     `json:"KeyPoints,omitempty" gorm:"foreignKey:TourID"`
+	Durations   TourDurations  `json:"Durations" gorm:"column:Durations;type:jsonb"`
+	Reviews     []Review       `json:"Reviews,omitempty" gorm:";foreignKey:TourID"`
 	Category    TourCategory   `json:"Category" gorm:"column:Category"`
 }
 
@@ -71,6 +71,9 @@ func (ls *TourDurations) Scan(src interface{}) error {
 }
 
 func (td TourDurations) Value() (driver.Value, error) {
+	if len(td) == 0 {
+		return "[]", nil
+	}
 	jsonData, err := json.Marshal(td)
 	if err != nil {
 		return nil, err

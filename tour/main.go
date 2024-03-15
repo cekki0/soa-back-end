@@ -45,9 +45,9 @@ func startServer(tourHandler *handler.TourHandler, reviewHandler *handler.Review
 	router.HandleFunc("/reviews", reviewHandler.FindAll).Methods("GET")
 	router.HandleFunc("/review", reviewHandler.Create).Methods("POST")
 
-	router.HandleFunc("/keyPoint/{id}", keyPointHandler.FindById).Methods("GET")
-	router.HandleFunc("/keyPoints", keyPointHandler.FindAll).Methods("GET")
-	router.HandleFunc("/keyPoint", keyPointHandler.Create).Methods("POST")
+	router.HandleFunc("/keypoint/{id}", keyPointHandler.FindById).Methods("GET")
+	router.HandleFunc("/keypoints", keyPointHandler.FindAll).Methods("GET")
+	router.HandleFunc("/keypoint", keyPointHandler.Create).Methods("POST")
 
 	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./static")))
 	println("Server is running")

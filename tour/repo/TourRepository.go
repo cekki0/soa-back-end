@@ -12,7 +12,7 @@ type TourRepository struct {
 
 func (repo *TourRepository) FindById(id string) (model.Tour, error) {
 	tour := model.Tour{}
-	dbResult := repo.DatabaseConnection.First(&tour, `"Id" = ?`, id)
+	dbResult := repo.DatabaseConnection.Preload("KeyPoints").Preload("Reviews").First(&tour, `"Id" = ?`, id)
 	if dbResult != nil {
 		return tour, dbResult.Error
 	}
@@ -20,6 +20,7 @@ func (repo *TourRepository) FindById(id string) (model.Tour, error) {
 }
 
 func (repo *TourRepository) Create(tour model.Tour) error {
+	tour.Durations = model.TourDurations{}
 	dbResult := repo.DatabaseConnection.Create(&tour)
 	if dbResult.Error != nil {
 		return dbResult.Error
@@ -29,7 +30,7 @@ func (repo *TourRepository) Create(tour model.Tour) error {
 
 func (repo *TourRepository) FindAll() ([]model.Tour, error) {
 	var tours []model.Tour
-	dbResult := repo.DatabaseConnection.Find(&tours)
+	dbResult := repo.DatabaseConnection.Preload("KeyPoints").Preload("Reviews").Find(&tours)
 	if dbResult.Error != nil {
 		return nil, dbResult.Error
 	}
