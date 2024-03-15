@@ -2,7 +2,6 @@ package repo
 
 import (
 	"fmt"
-	"time"
 	"tour/model"
 
 	"gorm.io/gorm"
@@ -19,13 +18,13 @@ func (repo *TourRepository) FindById(id string) (model.Tour, error) {
 		fmt.Println("greska")
 		return tour, dbResult.Error
 	}
-	if tour.PublishDate.Valid {
-		fmt.Println("Publish Date:", tour.PublishDate.Time.Format(time.RFC3339))
-	}
+	// if tour.PublishDate.Valid {
+	// 	fmt.Println("Publish Date:", tour.PublishDate.Time.Format(time.RFC3339))
+	// }
 
-	if tour.ArchiveDate.Valid {
-		fmt.Println("Archive Date:", tour.ArchiveDate.Time.Format(time.RFC3339))
-	}
+	// if tour.ArchiveDate.Valid {
+	// 	fmt.Println("Archive Date:", tour.ArchiveDate.Time.Format(time.RFC3339))
+	// }
 
 	fmt.Println("usao")
 	return tour, nil

@@ -45,15 +45,12 @@ namespace Explorer.API.Controllers.Tourist.MarketPlace
                 Trace.WriteLine(adress);
                 return Ok(response);
             }
-            else
+            return new ContentResult
             {
-                return new ContentResult
-                {
-                    StatusCode = (int)httpResponse.StatusCode,
-                    Content = await httpResponse.Content.ReadAsStringAsync(),
-                    ContentType = "text/plain"
-                };
-            }
+                StatusCode = (int)httpResponse.StatusCode,
+                Content = await httpResponse.Content.ReadAsStringAsync(),
+                ContentType = "text/plain"
+            };
 
             //var result = _tourService.GetById(tourId);
             //return CreateResponse(result);

@@ -4,6 +4,7 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"errors"
+	"time"
 
 	"github.com/lib/pq"
 )
@@ -36,8 +37,8 @@ type Tour struct {
 	Status      TourStatus     `json:"Status" gorm:"column:Status;type:integer"`
 	Price       float64        `json:"Price" gorm:"column:Price;type:double precision"`
 	Distance    float64        `json:"Distance" gorm:"column:Distance;type:double precision"`
-	PublishDate pq.NullTime    `json:"PublishDate" gorm:"column:PublishDate;type:time" default:"null"`
-	ArchiveDate pq.NullTime    `json:"ArchiveDate" gorm:"column:ArchiveDate;type:time" default:"null"`
+	PublishDate NullTime       `json:"PublishDate" gorm:"column:PublishDate;type:time"`
+	ArchiveDate NullTime       `json:"ArchiveDate" gorm:"column:ArchiveDate;type:time"`
 	KeyPoints   []KeyPoint     `json:"KeyPoints,omitempty"`
 	Durations   TourDurations  `json:"Durations" gorm:"column:Durations;type:jsonb"`
 	Reviews     []Review       `json:"Reviews,omitempty"`
@@ -46,6 +47,17 @@ type Tour struct {
 
 func (Tour) TableName() string {
 	return `tours."Tours"`
+}
+
+type NullTime struct {
+	pq.NullTime
+}
+
+func (nt NullTime) MarshalJSON() ([]byte, error) {
+	if nt.Valid {
+		return json.Marshal(nt.Time.Format(time.RFC3339))
+	}
+	return json.Marshal(nil)
 }
 
 type TourDurations []TourDuration
