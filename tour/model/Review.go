@@ -5,7 +5,7 @@ import (
 )
 
 type Review struct {
-	ID            int            `json:"Id" gorm:"column:Id;primaryKey"`
+	ID            int            `json:"Id" gorm:"column:Id;"`
 	Rating        int            `json:"Rating" gorm:"column:Rating"`
 	Comment       string         `json:"Comment" gorm:"column:Comment"`
 	TouristID     int            `json:"TouristId" gorm:"column:TouristId"`
@@ -18,26 +18,3 @@ type Review struct {
 func (Review) TableName() string {
 	return `tours."Reviews"`
 }
-
-// func NewReview(id, rating int, comment string, touristID int, tourVisitDate, commentDate pq.NullTime, tourID int, images []string) (*Review, error) {
-// 	if rating < 1 || rating > 5 {
-// 		return nil, errors.New("invalid rating")
-// 	}
-// 	if comment == "" {
-// 		return nil, errors.New("invalid comment")
-// 	}
-// 	if len(images) < 1 {
-// 		return nil, errors.New("invalid images input")
-// 	}
-
-// 	return &Review{
-// 		Id:            id,
-// 		Rating:        rating,
-// 		Comment:       comment,
-// 		TouristID:     touristID,
-// 		TourVisitDate: tourVisitDate,
-// 		CommentDate:   commentDate,
-// 		TourID:        tourID,
-// 		Images:        images,
-// 	}, nil
-// }

@@ -26,7 +26,7 @@ const (
 )
 
 type Tour struct {
-	ID          int            `json:"Id" gorm:"column:Id;primaryKey"`
+	ID          int            `json:"Id" gorm:"column:Id"`
 	IsDeleted   bool           `json:"IsDeleted" gorm:"column:IsDeleted" default:"false"`
 	AuthorID    int            `json:"AuthorId" gorm:"column:AuthorId"`
 	Name        string         `json:"Name" gorm:"column:Name"`
@@ -38,9 +38,9 @@ type Tour struct {
 	Distance    float64        `json:"Distance" gorm:"column:Distance"`
 	PublishDate pq.NullTime    `json:"PublishDate" gorm:"column:PublishDate;type:time" default:"null"`
 	ArchiveDate pq.NullTime    `json:"ArchiveDate" gorm:"column:ArchiveDate;type:time" default:"null"`
-	KeyPoints   []KeyPoint     `json:"KeyPoints,omitempty" gorm:"foreignKey:TourID"`
+	KeyPoints   []KeyPoint     `json:"KeyPoints,omitempty"`
 	Durations   TourDurations  `json:"Durations" gorm:"column:Durations;type:jsonb"`
-	Reviews     []Review       `json:"Reviews,omitempty" gorm:";foreignKey:TourID"`
+	Reviews     []Review       `json:"Reviews,omitempty"`
 	Category    TourCategory   `json:"Category" gorm:"column:Category"`
 }
 

@@ -7,7 +7,7 @@ import (
 )
 
 type KeyPoint struct {
-	ID                  int            `json:"Id" gorm:"column:Id;primaryKey"`
+	ID                  int            `json:"Id" gorm:"column:Id;"`
 	IsDeleted           bool           `json:"IsDeleted" gorm:"column:IsDeleted" default:"false"`
 	TourID              int            `json:"TourId" gorm:"column:TourId"`
 	Name                string         `json:"Name" gorm:"column:Name"`
