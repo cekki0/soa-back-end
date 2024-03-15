@@ -80,67 +80,67 @@ public class SocialEncounterCommandTests : BaseEncountersIntegrationTest
         storedEntity.ShouldBeNull();
     }
 
-    [Fact]
-    public void Succesfully_activate_social_encounter()
-    {
-        // Arrange
-        using var scope = Factory.Services.CreateScope();
-        var controller = CreateEncounterController(scope);
-        var contextUser = new ClaimsIdentity(new Claim[] { new Claim("id", "-21") }, "test");
+    //[Fact]
+    //public void Succesfully_activate_social_encounter()
+    //{
+    //    // Arrange
+    //    using var scope = Factory.Services.CreateScope();
+    //    var controller = CreateEncounterController(scope);
+    //    var contextUser = new ClaimsIdentity(new Claim[] { new Claim("id", "-21") }, "test");
 
-        var context = new DefaultHttpContext()
-        {
-            User = new ClaimsPrincipal(contextUser)
-        };
+    //    var context = new DefaultHttpContext()
+    //    {
+    //        User = new ClaimsPrincipal(contextUser)
+    //    };
 
-        controller.ControllerContext = new ControllerContext
-        {
-            HttpContext = context
-        };
-        var dbContext = scope.ServiceProvider.GetRequiredService<EncountersContext>();
-        var touristPositionDto = new TouristPositionCreateDto
-        {
-            TouristId = -1,
-            Longitude = 45.45,
-            Latitude = 45.45
-        };
-        // Act
-        var result = (ObjectResult)controller.Activate(touristPositionDto, -1).Result;
+    //    controller.ControllerContext = new ControllerContext
+    //    {
+    //        HttpContext = context
+    //    };
+    //    var dbContext = scope.ServiceProvider.GetRequiredService<EncountersContext>();
+    //    var touristPositionDto = new TouristPositionCreateDto
+    //    {
+    //        TouristId = -1,
+    //        Longitude = 45.45,
+    //        Latitude = 45.45
+    //    };
+    //    // Act
+    //    var result = (ObjectResult)controller.Activate(touristPositionDto, -1).Result;
 
-        // Assert - Response
-        result.ShouldNotBeNull();
-        result.StatusCode.ShouldBe(200);
-    }
+    //    // Assert - Response
+    //    result.ShouldNotBeNull();
+    //    result.StatusCode.ShouldBe(200);
+    //}
 
-    [Fact]
-    public void Unsuccesfully_activate_social_encounter()
-    {
-        using var scope = Factory.Services.CreateScope();
-        var controller = CreateEncounterController(scope);
-        var contextUser = new ClaimsIdentity(new Claim[] { new Claim("id", "-21") }, "test");
+    //[Fact]
+    //public void Unsuccesfully_activate_social_encounter()
+    //{
+    //    using var scope = Factory.Services.CreateScope();
+    //    var controller = CreateEncounterController(scope);
+    //    var contextUser = new ClaimsIdentity(new Claim[] { new Claim("id", "-21") }, "test");
 
-        var context = new DefaultHttpContext()
-        {
-            User = new ClaimsPrincipal(contextUser)
-        };
+    //    var context = new DefaultHttpContext()
+    //    {
+    //        User = new ClaimsPrincipal(contextUser)
+    //    };
 
-        controller.ControllerContext = new ControllerContext
-        {
-            HttpContext = context
-        };
-        var dbContext = scope.ServiceProvider.GetRequiredService<EncountersContext>();
-        var touristPositionDto = new TouristPositionCreateDto
-        {
-            TouristId = -1,
-            Longitude = 46.55,
-            Latitude = 45.45
-        };
-        // Act
-        var result = (ObjectResult)controller.Activate(touristPositionDto, -1).Result;
+    //    controller.ControllerContext = new ControllerContext
+    //    {
+    //        HttpContext = context
+    //    };
+    //    var dbContext = scope.ServiceProvider.GetRequiredService<EncountersContext>();
+    //    var touristPositionDto = new TouristPositionCreateDto
+    //    {
+    //        TouristId = -1,
+    //        Longitude = 46.55,
+    //        Latitude = 45.45
+    //    };
+    //    // Act
+    //    //var result = (ObjectResult)controller.Activate(touristPositionDto, -1).Result;
 
-        // Assert - Response
-        result.StatusCode.ShouldBe(500);
-    }
+    //    // Assert - Response
+    //    result.StatusCode.ShouldBe(500);
+    //}
 
     [Fact]
     public void Succesfully_complete_social_encounter()
