@@ -8,9 +8,9 @@ import (
 
 type KeyPoint struct {
 	Id                  int            `json:"Id" gorm:"column:Id;primaryKey"`
-	IsDeleted           bool           `json:"IsDeleted" gorm:"column:IsDeleted"`
+	IsDeleted           bool           `json:"IsDeleted" gorm:"column:IsDeleted" default:"false"`
 	TourID              int            `json:"TourId" gorm:"column:TourId"`
-	Tour                Tour           `json:"Tour" gorm:"-:all"`
+	Tour                Tour           `json:"Tour,omitempty" gorm:"-"`
 	Name                string         `json:"Name" gorm:"column:Name"`
 	Description         string         `json:"Description" gorm:"column:Description"`
 	Longitude           float64        `json:"Longitude" gorm:"column:Longitude"`
@@ -18,10 +18,10 @@ type KeyPoint struct {
 	LocationAddress     string         `json:"LocationAddress" gorm:"column:LocationAddress"`
 	ImagePath           string         `json:"ImagePath" gorm:"column:ImagePath"`
 	Order               float64        `json:"Order" gorm:"column:Order"`
-	HaveSecret          bool           `json:"HaveSecret" gorm:"column:HaveSecret"`
-	Secret              KeyPointSecret `json:"Secret" default:"null" gorm:"type:jsonb;column:Secret"`
+	HaveSecret          bool           `json:"HaveSecret" gorm:"column:HaveSecret" default:"false"`
+	Secret              KeyPointSecret `json:"Secret" default:"{}" gorm:"type:jsonb;column:Secret"`
 	IsEncounterRequired bool           `json:"IsEncounterRequired" gorm:"column:IsEncounterRequired"`
-	HasEncounter        bool           `json:"HasEncounter" gorm:"column:HasEncounter"`
+	HasEncounter        bool           `json:"HasEncounter" gorm:"column:HasEncounter" default:"false"`
 }
 
 func (KeyPoint) TableName() string {

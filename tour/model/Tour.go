@@ -27,7 +27,7 @@ const (
 
 type Tour struct {
 	Id          int            `json:"Id" gorm:"column:Id;primaryKey"`
-	IsDeleted   bool           `json:"IsDeleted" gorm:"column:IsDeleted"`
+	IsDeleted   bool           `json:"IsDeleted" gorm:"column:IsDeleted" default:"false"`
 	AuthorID    int            `json:"AuthorId" gorm:"column:AuthorId"`
 	Name        string         `json:"Name" gorm:"column:Name"`
 	Description string         `json:"Description" gorm:"column:Description"`
@@ -38,9 +38,9 @@ type Tour struct {
 	Distance    float64        `json:"Distance" gorm:"column:Distance"`
 	PublishDate pq.NullTime    `json:"PublishDate" gorm:"column:PublishDate;type:time" default:"null"`
 	ArchiveDate pq.NullTime    `json:"ArchiveDate" gorm:"column:ArchiveDate;type:time" default:"null"`
-	KeyPoints   []KeyPoint     `json:"KeyPoints" gorm:"-:all"` //pogledati za kasnije kako povezati dve tabele
-	Durations   TourDurations  `json:"Durations" gorm:"column:Durations;type:jsonb" default:"null"`
-	Reviews     []Review       `json:"Reviews" gorm:"-:all"`
+	KeyPoints   []KeyPoint     `json:"KeyPoints,omitempty" gorm:"-"`
+	Durations   TourDurations  `json:"Durations" gorm:"column:Durations;type:jsonb" default:"[]"`
+	Reviews     []Review       `json:"Reviews,omitempty" gorm:"-"`
 	Category    TourCategory   `json:"Category" gorm:"column:Category"`
 }
 
