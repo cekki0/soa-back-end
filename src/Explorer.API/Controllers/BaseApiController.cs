@@ -7,6 +7,12 @@ namespace Explorer.API.Controllers;
 [ApiController]
 public class BaseApiController : ControllerBase
 {
+    protected string encounterApi = "http://localhost:8089/api/";
+
+    protected static HttpClient httpClient = new()
+    {
+    };
+
     protected ActionResult CreateErrorResponse(List<IError> errors)
     {
         var code = 500;

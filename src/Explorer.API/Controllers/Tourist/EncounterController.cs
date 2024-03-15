@@ -4,6 +4,7 @@ using Explorer.Encounters.API.Public;
 using Explorer.Tours.API.Dtos.TouristPosition;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace Explorer.API.Controllers.Tourist
 {
@@ -20,19 +21,57 @@ namespace Explorer.API.Controllers.Tourist
         }
 
         [HttpGet("{encounterId:long}/instance")]
-        public ActionResult<EncounterResponseDto> GetInstance(long encounterId)
+        public async Task<ActionResult<EncounterInstanceResponseDto>> GetInstance(long encounterId)
         {
             long userId = int.Parse(HttpContext.User.Claims.First(i => i.Type.Equals("id", StringComparison.OrdinalIgnoreCase)).Value);
-            var result = _encounterService.GetInstance(userId, encounterId);
-            return CreateResponse(result);
+
+            var httpResponse = await httpClient.GetAsync(encounterApi + encounterId + "/instance/" + userId);
+
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                if (httpResponse.StatusCode == HttpStatusCode.OK)
+                {
+                    var response = await httpResponse.Content.ReadFromJsonAsync<EncounterInstanceResponseDto>();
+
+                    return Ok(response);
+                }
+
+                return Ok();
+
+            }
+            else
+            {
+                return new ContentResult
+                {
+                    StatusCode = (int)httpResponse.StatusCode,
+                    Content = await httpResponse.Content.ReadAsStringAsync(),
+                    ContentType = "text/plain"
+                };
+            }
+
         }
 
         [HttpPost("{id:long}/activate")]
-        public ActionResult<EncounterResponseDto> Activate([FromBody] TouristPositionCreateDto position, long id)
+        public async Task<ActionResult<EncounterResponseDto>> Activate([FromBody] TouristPositionCreateDto position, long id)
         {
             long userId = int.Parse(HttpContext.User.Claims.First(i => i.Type.Equals("id", StringComparison.OrdinalIgnoreCase)).Value);
-            var result = _encounterService.ActivateEncounter(userId, id, position.Longitude, position.Latitude);
-            return CreateResponse(result);
+            position.TouristId = userId;
+            var httpResponse = await httpClient.PostAsJsonAsync(encounterApi + id + "/activate/", position);
+
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                var response = await httpResponse.Content.ReadFromJsonAsync<EncounterInstanceResponseDto>();
+                return Ok(response);
+            }
+            else
+            {
+                return new ContentResult
+                {
+                    StatusCode = (int)httpResponse.StatusCode,
+                    Content = await httpResponse.Content.ReadAsStringAsync(),
+                    ContentType = "text/plain"
+                };
+            }
         }
 
         [HttpPost("{id:long}/complete")]

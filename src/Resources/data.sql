@@ -196,7 +196,7 @@ INSERT INTO encounters."Encounters" ("Id", "Title", "Description", "Picture", "L
 INSERT INTO encounters."Encounters" ("Id", "Title", "Description", "Picture", "Longitude", "Latitude", "Radius", "XpReward", "Status", "Type", "Instances") VALUES 
 (-11, 'Zaja', 'Poduplati sa prijateljima u zaji.', 'https://oradio.rs/files/uploads/2019/11/mala-menza.jpg', 19.849306941032413, 45.24610440123252, 50, 20, 0, 0, '[]');
 INSERT INTO encounters."Encounters" ("Id", "Title", "Description", "Picture", "Longitude", "Latitude", "Radius", "XpReward", "Status", "Type", "Instances") VALUES 
-(-15, 'Lepa kuca', 'Gadjaj prozor kamenom', 'https://media.discordapp.net/attachments/783721881043206154/1182032447857242222/1701888891690.jpg', 19.807555675506595, 45.27031287156058, 50, 50, 0, 3, '[{"Status": 1, "UserId": -5, "CompletionTime": "2023-12-16T18:44:38.5492356Z"}, {"Status": 0, "UserId": -4, "CompletionTime": null}]');
+(-15, 'Lepa kuca', 'Gadjaj prozor kamenom', 'https://media.discordapp.net/attachments/783721881043206154/1182032447857242222/1701888891690.jpg', 19.807555675506595, 45.27031287156058, 50, 50, 0, 3, '[{"status": 1, "userId": -5, "completionTime": "2023-12-16T18:44:38.5492356Z"}, {"status": 0, "userId": -4, "completionTime": null}]');
 INSERT INTO encounters."HiddenLocationEncounters" ("Id", "PictureLongitude", "PictureLatitude") VALUES (-13, 19.847493767738346, 45.235973883652456);
 INSERT INTO encounters."HiddenLocationEncounters" ("Id", "PictureLongitude", "PictureLatitude") VALUES (-12, 19.849011898040775, 45.2370278136203);
 INSERT INTO encounters."SocialEncounters" ("Id", "PeopleNumber") VALUES (-11, 1);
