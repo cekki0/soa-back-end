@@ -1,9 +1,5 @@
-import { object, string, TypeOf, number, z, boolean } from "zod";
-import {
-  EncounterInstanceDto,
-  EncounterInstanceSchema,
-} from "./encounterInstance.schema";
-import { miscEncounters } from "../db/schema";
+import { object, string, number, z, boolean } from "zod";
+import { EncounterInstanceSchema } from "./encounterInstance.schema";
 
 export const EncounterSchema = object({
   title: string({

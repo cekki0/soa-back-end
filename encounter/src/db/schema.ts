@@ -9,6 +9,7 @@ import {
   text,
 } from "drizzle-orm/pg-core";
 import { EncounterInstanceDto } from "../schema/encounterInstance.schema";
+import { relations } from "drizzle-orm";
 
 export const encounterSchema = pgSchema("encounters");
 

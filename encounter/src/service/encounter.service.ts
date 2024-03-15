@@ -465,10 +465,16 @@ export default class EncounterService {
   ): Promise<Result> {
     const result = new Result();
     try {
-      const encounter = await this.getById(encounterId);
+      const hiddenData = (
+        await db
+          .select()
+          .from(hiddenLocationEncounters)
+          .where(eq(hiddenLocationEncounters.id, encounterId))
+      )[0];
       if (
         !this.isUserInCompletionRange(
-          encounter,
+          hiddenData.pictureLongitude,
+          hiddenData.pictureLatitude,
           userPos.longitude,
           userPos.latitude
         )
@@ -483,13 +489,14 @@ export default class EncounterService {
   }
 
   private isUserInCompletionRange(
-    encounter: EncounterDto,
+    targetLongitude: number,
+    targetLatitude: number,
     userLongitude: number,
     userLatitude: number
   ): boolean {
     const earthRadius: number = 6371000;
-    const latitude1: number = (encounter.latitude * Math.PI) / 180; // encounter.pictureLatitude
-    const longitude1: number = (encounter.longitude * Math.PI) / 180; //encounter.pictureLongitude
+    const latitude1: number = (targetLatitude * Math.PI) / 180; // encounter.pictureLatitude
+    const longitude1: number = (targetLongitude * Math.PI) / 180; //encounter.pictureLongitude
     const latitude2: number = (userLatitude * Math.PI) / 180;
     const longitude2: number = (userLongitude * Math.PI) / 180;
 
