@@ -21,8 +21,8 @@ export const encounters = encounterSchema.table("Encounters", {
   latitude: doublePrecision("Latitude").notNull(),
   radius: doublePrecision("Radius").notNull(),
   xpReward: integer("XpReward").notNull(),
-  encounterStatus: integer("Status").notNull(),
-  encounterType: integer("Type").notNull(),
+  status: integer("Status").notNull(),
+  type: integer("Type").notNull(),
   instances: jsonb("Instances").$type<EncounterInstanceDto[]>(),
 });
 

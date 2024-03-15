@@ -19,13 +19,6 @@ namespace Explorer.API.Controllers.Tourist
             _touristProgressService = touristProgressService;
         }
 
-        [HttpGet("{id:long}")]
-        public ActionResult<EncounterResponseDto> GetHiddenLocationEncounterById(long id)
-        {
-            var result = _encounterService.GetHiddenLocationEncounterById(id);
-            return CreateResponse(result);
-        }
-
         [HttpPost("{id:long}/complete")]
         public ActionResult<EncounterResponseDto> Complete([FromBody] TouristPositionCreateDto position, long id)
         {
@@ -35,10 +28,20 @@ namespace Explorer.API.Controllers.Tourist
         }
 
         [HttpPost("{id:long}/check-range")]
-        public bool CheckIfUserInCompletionRange([FromBody] TouristPositionCreateDto position, long id)
+        public async Task<bool> CheckIfUserInCompletionRange([FromBody] TouristPositionCreateDto position, long id)
         {
             long userId = int.Parse(HttpContext.User.Claims.First(i => i.Type.Equals("id", StringComparison.OrdinalIgnoreCase)).Value);
-            return _encounterService.CheckIfUserInCompletionRange(userId, id, position.Longitude, position.Latitude);
+            position.TouristId = userId;
+            var httpResponse = await httpClient.PostAsJsonAsync(encounterApi + id + "/isUserInRange/", position);
+
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         [HttpPost("create")]

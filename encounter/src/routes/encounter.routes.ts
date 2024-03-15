@@ -163,4 +163,20 @@ router.get("/progress/:userId", async (req: Request, res: Response) => {
   }
 });
 
+router.post(
+  "/:encounterId/isUserInRange",
+  validateRequest(TouristPositionSchema),
+  async (
+    req: Request<{ encounterId: string }, {}, TouristPoisitionDto>,
+    res: Response
+  ) => {
+    const result = await service.checkIfUserInCompletionRange(
+      Number.parseInt(req.params.encounterId),
+      req.body
+    );
+    if (result.success) return res.sendStatus(200);
+    return res.sendStatus(418);
+  }
+);
+
 export default router;

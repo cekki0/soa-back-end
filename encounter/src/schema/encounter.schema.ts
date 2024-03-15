@@ -30,12 +30,12 @@ export const EncounterSchema = object({
   xpReward: number({
     required_error: "Xp reward is required",
   }).gt(0, "Invalid xp reward value"),
-  encounterStatus: number({
+  status: number({
     required_error: "Encounter status is required",
   })
     .gte(0, "Invalid encounter status value")
     .lte(2, "Invalid encounter status value"),
-  encounterType: number({
+  type: number({
     required_error: "Encounter type is required",
   })
     .gte(0, "Invalid encounter type value")
@@ -46,7 +46,7 @@ export const EncounterSchema = object({
 const hasId = z.object({ id: number() });
 
 export const ResponseEncounterSchema = EncounterSchema.omit({
-  encounterStatus: true,
+  status: true,
   instances: true,
 });
 

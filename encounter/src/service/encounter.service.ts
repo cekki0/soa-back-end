@@ -15,7 +15,10 @@ import {
   EncounterInstanceSchema,
 } from "../schema/encounterInstance.schema";
 import { error } from "console";
-import { PositionWithRangeDto } from "../schema/touristPosition.schema";
+import {
+  PositionWithRangeDto,
+  TouristPoisitionDto,
+} from "../schema/touristPosition.schema";
 
 type EncountersData = {
   Id: number;
@@ -119,7 +122,7 @@ export default class EncounterService {
       // Activate encounter if possible
       const encounter = await this.getById(encounterId);
 
-      if (encounter.encounterStatus != 0)
+      if (encounter.status != 0)
         throw new Error("Encounter is not yet published.");
       if (this.hasUserActivatedEncounter(encounter, userId))
         throw new Error("User has already activated/completed this encounter.");
@@ -159,6 +162,18 @@ export default class EncounterService {
     const result = new Result<TouristProgress>();
     try {
       const encounter = await this.getById(encounterId);
+
+      if (encounter.type == 0) {
+        const activeInstances = encounter.instances?.filter(
+          (x) => (x.status = 0)
+        );
+        if (!activeInstances || activeInstances.length <= 5) {
+          throw new Error(
+            "Not enough tourists active on this social encounter."
+          );
+        }
+      }
+
       // Complete instance
       const instanceIndex = encounter.instances?.findIndex(
         (x) => x.userId == userId
@@ -283,10 +298,6 @@ export default class EncounterService {
     longitude: number,
     latitude: number
   ): boolean {
-    if (longitude < -180 || longitude > 180)
-      throw new Error("Invalid Longitude");
-    if (latitude < -90 || latitude > 90) throw new Error("Invalid Latitude");
-
     const earthRadius: number = 6371000;
     const latitude1: number = (encounter.latitude * Math.PI) / 180;
     const longitude1: number = (encounter.longitude * Math.PI) / 180;
@@ -306,6 +317,55 @@ export default class EncounterService {
     const distance: number = earthRadius * c;
 
     return distance < range;
+  }
+
+  public async checkIfUserInCompletionRange(
+    encounterId: number,
+    userPos: TouristPoisitionDto
+  ): Promise<Result> {
+    const result = new Result();
+    try {
+      const encounter = await this.getById(encounterId);
+      if (
+        !this.isUserInCompletionRange(
+          encounter,
+          userPos.longitude,
+          userPos.latitude
+        )
+      )
+        throw new Error("User not in encounter range.");
+      result.success = true;
+    } catch (error: any) {
+      console.error(error);
+      result.message = error.message;
+    }
+    return result;
+  }
+
+  private isUserInCompletionRange(
+    encounter: EncounterDto,
+    userLongitude: number,
+    userLatitude: number
+  ): boolean {
+    const earthRadius: number = 6371000;
+    const latitude1: number = (encounter.latitude * Math.PI) / 180; // encounter.pictureLatitude
+    const longitude1: number = (encounter.longitude * Math.PI) / 180; //encounter.pictureLongitude
+    const latitude2: number = (userLatitude * Math.PI) / 180;
+    const longitude2: number = (userLongitude * Math.PI) / 180;
+
+    const latitudeDistance: number = latitude2 - latitude1;
+    const longitudeDistance: number = longitude2 - longitude1;
+
+    const a: number =
+      Math.sin(latitudeDistance / 2) * Math.sin(latitudeDistance / 2) +
+      Math.cos(latitude1) *
+        Math.cos(latitude2) *
+        Math.sin(longitudeDistance / 2) *
+        Math.sin(longitudeDistance / 2);
+    const c: number = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distance: number = earthRadius * c;
+
+    return distance < 10;
   }
 
   private addXp(progress: TouristProgress, xpReward: number) {
