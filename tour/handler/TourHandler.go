@@ -25,6 +25,23 @@ func (handler *TourHandler) FindById(writer http.ResponseWriter, req *http.Reque
 	json.NewEncoder(writer).Encode(tour)
 }
 
+// func (handler *TourHandler) Create(writer http.ResponseWriter, req *http.Request) {
+// 	var tour model.Tour
+// 	err := json.NewDecoder(req.Body).Decode(&tour)
+// 	if err != nil {
+// 		http.Error(writer, err.Error(), http.StatusBadRequest)
+// 		return
+// 	}
+
+// 	err = handler.TourService.Create(tour)
+// 	if err != nil {
+// 		http.Error(writer, err.Error(), http.StatusInternalServerError)
+// 		return
+// 	}
+
+// 	writer.WriteHeader(http.StatusCreated)
+// }
+
 func (handler *TourHandler) Create(writer http.ResponseWriter, req *http.Request) {
 	var tour model.Tour
 	err := json.NewDecoder(req.Body).Decode(&tour)
@@ -33,13 +50,23 @@ func (handler *TourHandler) Create(writer http.ResponseWriter, req *http.Request
 		return
 	}
 
-	err = handler.TourService.Create(tour)
+	// Call the Create method in the service layer
+	createdTour, err := handler.TourService.Create(tour)
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
+	// Respond with the created tour as JSON
+	jsonResponse, err := json.Marshal(createdTour)
+	if err != nil {
+		http.Error(writer, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	writer.Header().Set("Content-Type", "application/json")
 	writer.WriteHeader(http.StatusCreated)
+	writer.Write(jsonResponse)
 }
 
 func (handler *TourHandler) FindAll(writer http.ResponseWriter, req *http.Request) {

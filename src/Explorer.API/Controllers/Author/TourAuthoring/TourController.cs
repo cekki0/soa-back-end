@@ -2,7 +2,9 @@
 using Explorer.Tours.API.Dtos;
 using Explorer.Tours.API.Public;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 using System.Security.Claims;
 
 namespace Explorer.API.Controllers.Author.TourAuthoring
@@ -44,18 +46,42 @@ namespace Explorer.API.Controllers.Author.TourAuthoring
             return CreateResponse(result);
         }
 
+        //[Authorize(Roles = "author, tourist")]
+        //[HttpPost]
+        //public ActionResult<TourResponseDto> Create([FromBody] TourCreateDto tour)
+        //{
+        //    var identity = HttpContext.User.Identity as ClaimsIdentity;
+        //    if (identity != null && identity.IsAuthenticated)
+        //    {
+        //        tour.AuthorId = long.Parse(identity.FindFirst("id").Value);
+        //    }
+        //    var result = _tourService.Create(tour);
+        //    return CreateResponse(result);
+        //}
+
         [Authorize(Roles = "author, tourist")]
         [HttpPost]
-        public ActionResult<TourResponseDto> Create([FromBody] TourCreateDto tour)
+        public async Task<ActionResult<TourResponseDto>> Create([FromBody] TourCreateDto tour)
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
             if (identity != null && identity.IsAuthenticated)
             {
                 tour.AuthorId = long.Parse(identity.FindFirst("id").Value);
             }
-            var result = _tourService.Create(tour);
-            return CreateResponse(result);
+            var httpResponse = await httpClient.PostAsJsonAsync(tourApi + "tour", tour);
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                var response = await httpResponse.Content.ReadFromJsonAsync<TourResponseDto>();
+                return Ok(response);
+            }
+            return new ContentResult
+            {
+                StatusCode = (int)httpResponse.StatusCode,
+                Content = await httpResponse.Content.ReadAsStringAsync(),
+                ContentType = "text/plain"
+            };
         }
+
 
         [Authorize(Roles = "author, tourist")]
         [HttpPut("{id:int}")]

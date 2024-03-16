@@ -51,9 +51,6 @@ namespace Explorer.API.Controllers.Tourist.MarketPlace
                 Content = await httpResponse.Content.ReadAsStringAsync(),
                 ContentType = "text/plain"
             };
-
-            //var result = _tourService.GetById(tourId);
-            //return CreateResponse(result);
         }
 
         [HttpGet("tours/can-be-rated/{tourId:long}")]

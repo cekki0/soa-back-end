@@ -18,15 +18,15 @@ func (service *TourService) FindById(id string) (*model.Tour, error) {
 	return &tour, nil
 }
 
-func (service *TourService) Create(tour model.Tour) error {
-	err := service.TourRepo.Create(tour)
+func (service *TourService) Create(tour model.Tour) (model.Tour, error) {
+	createdTour, err := service.TourRepo.Create(tour)
 	if err != nil {
-		return err
+		return model.Tour{}, err
 	}
-	return nil
+	return createdTour, nil
 }
 
-func (service *TourService) FindAll() ([]model.Tour, error) {	
+func (service *TourService) FindAll() ([]model.Tour, error) {
 	tours, err := service.TourRepo.FindAll()
 	if err != nil {
 		return nil, fmt.Errorf("failed to retrieve tours: %w", err)
