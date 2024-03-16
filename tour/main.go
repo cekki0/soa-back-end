@@ -30,11 +30,11 @@ func initDB() *gorm.DB {
 		return nil
 	}
 
-	database.AutoMigrate(&model.Tour{}, &model.KeyPoint{}, &model.Review{})
+	database.AutoMigrate(&model.Tour{}, &model.KeyPoint{}, &model.Review{}, &model.Preference{})
 	return database
 }
 
-func startServer(tourHandler *handler.TourHandler, reviewHandler *handler.ReviewHandler, keyPointHandler *handler.KeyPointHanlder) {
+func startServer(tourHandler *handler.TourHandler, reviewHandler *handler.ReviewHandler, keyPointHandler *handler.KeyPointHanlder, preferenceHandler *handler.PreferenceHandler) {
 	router := mux.NewRouter().StrictSlash(true)
 
 	router.HandleFunc("/tour/{id}", tourHandler.FindById).Methods("GET")
@@ -45,9 +45,12 @@ func startServer(tourHandler *handler.TourHandler, reviewHandler *handler.Review
 	router.HandleFunc("/reviews", reviewHandler.FindAll).Methods("GET")
 	router.HandleFunc("/review", reviewHandler.Create).Methods("POST")
 
-	router.HandleFunc("/keypoint/{id}", keyPointHandler.FindById).Methods("GET")
-	router.HandleFunc("/keypoints", keyPointHandler.FindAll).Methods("GET")
-	router.HandleFunc("/keypoint", keyPointHandler.Create).Methods("POST")
+	// router.HandleFunc("/keypoint/{id}", keyPointHandler.FindById).Methods("GET")
+	// router.HandleFunc("/keypoints", keyPointHandler.FindAll).Methods("GET")
+	router.HandleFunc("/keypoint/{tourId}", keyPointHandler.Create).Methods("POST")
+
+	router.HandleFunc("/preference/{touristId}", preferenceHandler.FindByUserId).Methods("GET")
+	router.HandleFunc("/preference", preferenceHandler.Create).Methods("POST")
 
 	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./static")))
 	println("Server is running")
@@ -73,5 +76,9 @@ func main() {
 	keyPointService := &service.KeyPointService{KeyPointRepo: keyPointRepo}
 	keyPointHandler := &handler.KeyPointHanlder{KeyPointService: keyPointService}
 
-	startServer(tourHandler, reviewHandler, keyPointHandler)
+	preferenceRepo := &repo.PreferenceRepository{DatabaseConnection: database}
+	preferenceService := &service.PreferenceService{PreferenceRepo: preferenceRepo}
+	preferenceHandler := &handler.PreferenceHandler{PreferenceService: preferenceService}
+
+	startServer(tourHandler, reviewHandler, keyPointHandler, preferenceHandler)
 }
