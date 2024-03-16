@@ -28,18 +28,27 @@ func (handler *ReviewHandler) FindById(writer http.ResponseWriter, req *http.Req
 func (handler *ReviewHandler) Create(writer http.ResponseWriter, req *http.Request) {
 	var review model.Review
 	err := json.NewDecoder(req.Body).Decode(&review)
+
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	err = handler.ReviewService.Create(review)
+	createdReview, err := handler.ReviewService.Create(review)
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
+	responseBody, err := json.Marshal(createdReview)
+	if err != nil {
+		http.Error(writer, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	writer.Header().Set("Content-Type", "application/json")
 	writer.WriteHeader(http.StatusCreated)
+	writer.Write(responseBody)
 }
 
 func (handler *ReviewHandler) FindAll(writer http.ResponseWriter, req *http.Request) {

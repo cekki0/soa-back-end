@@ -19,12 +19,12 @@ func (repo *ReviewRepository) FindById(id string) (model.Review, error) {
 	return review, nil
 }
 
-func (repo *ReviewRepository) Create(review model.Review) error {
+func (repo *ReviewRepository) Create(review model.Review) (model.Review, error) {
 	dbResult := repo.DatabaseConnection.Create(&review)
 	if dbResult.Error != nil {
-		return dbResult.Error
+		return review, dbResult.Error
 	}
-	return nil
+	return review, nil
 }
 
 func (repo *ReviewRepository) FindAll() ([]model.Review, error) {

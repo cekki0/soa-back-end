@@ -18,11 +18,12 @@ func (service *ReviewService) FindById(id string) (*model.Review, error) {
 	return &review, nil
 }
 
-func (service *ReviewService) Create(review model.Review) error {
-	if err := service.ReviewRepo.Create(review); err != nil {
-		return fmt.Errorf("failed to create review: %w", err)
+func (service *ReviewService) Create(review model.Review) (model.Review, error) {
+	createdReview, err := service.ReviewRepo.Create(review)
+	if err != nil {
+		return model.Review{}, fmt.Errorf("failed to create review: %w", err)
 	}
-	return nil
+	return createdReview, nil
 }
 
 func (service *ReviewService) FindAll() ([]model.Review, error) {

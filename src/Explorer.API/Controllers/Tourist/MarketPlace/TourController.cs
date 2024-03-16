@@ -39,10 +39,7 @@ namespace Explorer.API.Controllers.Tourist.MarketPlace
 
             if (httpResponse.IsSuccessStatusCode)
             {
-                Trace.WriteLine(adress);
                 var response = await httpResponse.Content.ReadFromJsonAsync<TourResponseDto>();
-                Trace.WriteLine(httpResponse.Content);
-                Trace.WriteLine(adress);
                 return Ok(response);
             }
             return new ContentResult
