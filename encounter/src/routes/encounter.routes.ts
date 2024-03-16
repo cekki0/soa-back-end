@@ -111,6 +111,39 @@ router.post(
   }
 );
 
+router.post(
+  "/:encounterId/completeHiddenEncounter/:userId",
+  async (
+    req: Request<
+      { encounterId: string; userId: string },
+      {},
+      TouristPoisitionDto
+    >,
+    res: Response
+  ) => {
+    try {
+      const encounterId = Number.parseInt(req.params.encounterId);
+      const userId = Number.parseInt(req.params.userId);
+      const { longitude, latitude } = req.body;
+
+      const result = await service.completeHiddenEncounter(
+        userId,
+        encounterId,
+        longitude,
+        latitude
+      );
+
+      return res.json(result);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({
+        success: false,
+        message: "error while completing hidden encounter",
+      });
+    }
+  }
+);
+
 router.get(
   "/:encounterId/complete/:userId",
   async (req: Request, res: Response) => {
@@ -188,6 +221,7 @@ router.post(
     return res.sendStatus(418);
   }
 );
+
 router.post(
   "/createMiscEncounter/tourist",
   validateRequest(MiscEncountersSchema),
@@ -270,6 +304,33 @@ router.post(
         .status(500)
         .json({ message: "error while creating hidden encounter" });
     }
+  }
+);
+
+router.get("/:hiddenEncounterId", async (req: Request, res: Response) => {
+  try {
+    const encounter = await service.getById(
+      Number.parseInt(req.params.hiddenEncounterId)
+    );
+    return res.json(encounter);
+  } catch (error: any) {
+    return res.status(404).json({ message: error.message });
+  }
+});
+
+router.post(
+  "/:userId/check-range",
+  validateRequest(PositionWithRangeSchema),
+  async (
+    req: Request<{ userId: string }, {}, PositionWithRangeDto>,
+    res: Response
+  ) => {
+    const userId = Number.parseInt(req.params.userId);
+    const result = await service.getAllInRange(req.body);
+
+    if (result.success) return res.json(result.value);
+
+    return res.status(400).json({ message: result.message });
   }
 );
 

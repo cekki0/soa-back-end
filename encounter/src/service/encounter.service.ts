@@ -295,6 +295,30 @@ export default class EncounterService {
     return result;
   }
 
+  public async completeHiddenEncounter(
+    userId: number,
+    encounterId: number,
+    longitude: number,
+    latitude: number
+  ) {
+    try {
+      const encounter = await this.getById(encounterId);
+      if (
+        this.isUserInCompletionRange(
+          longitude,
+          latitude,
+          encounter.longitude,
+          encounter.latitude
+        )
+      ) {
+        return this.completeEncounter(userId, encounter.id);
+      }
+      return { success: false, message: "User is not in 5m range" };
+    } catch (error) {
+      return { success: false, message: "Error while completing encounter" };
+    }
+  }
+
   public async completeEncounter(
     userId: number,
     encounterId: number

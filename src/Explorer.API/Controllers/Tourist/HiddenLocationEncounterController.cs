@@ -1,9 +1,11 @@
-﻿using Explorer.Encounters.API.Dtos;
+﻿using Explorer.BuildingBlocks.Core.UseCases;
+using Explorer.Encounters.API.Dtos;
 using Explorer.Encounters.API.Public;
 using Explorer.Tours.API.Dtos.TouristPosition;
 using FluentResults;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Http.Json;
 
 namespace Explorer.API.Controllers.Tourist
 {
@@ -19,29 +21,41 @@ namespace Explorer.API.Controllers.Tourist
             _touristProgressService = touristProgressService;
         }
 
+        [HttpGet("{id:long}")]
+        public async Task<ActionResult<EncounterResponseDto>> GetHiddenLocationEncounterByIdAsync(long id)
+        {
+            var result = await httpClient.GetAsync(encounterApi + id);
+
+            return new ContentResult
+            {
+                StatusCode = (int)result.StatusCode,
+                Content = await result.Content.ReadAsStringAsync(),
+                ContentType = "text/plain"
+            };
+        }
+
         [HttpPost("{id:long}/complete")]
-        public ActionResult<EncounterResponseDto> Complete([FromBody] TouristPositionCreateDto position, long id)
+        public async Task<ActionResult<EncounterResponseDto>> CompleteAsync([FromBody] TouristPositionCreateDto position, long id)
         {
             long userId = int.Parse(HttpContext.User.Claims.First(i => i.Type.Equals("id", StringComparison.OrdinalIgnoreCase)).Value);
-            var result = _encounterService.CompleteHiddenLocationEncounter(userId, id, position.Longitude, position.Latitude);
-            return CreateResponse(result);
+            var result = await httpClient.PostAsJsonAsync(encounterApi + id + "/completeHiddenEncounter/" + userId, position);
+
+            return new ContentResult
+            {
+                StatusCode = (int)result.StatusCode,
+                Content = await result.Content.ReadAsStringAsync(),
+                ContentType = "text/plain"
+            };
         }
 
         [HttpPost("{id:long}/check-range")]
-        public async Task<bool> CheckIfUserInCompletionRange([FromBody] TouristPositionCreateDto position, long id)
+        public async Task<bool> CheckIfUserInCompletionRangeAsync([FromBody] TouristPositionCreateDto position, long id)
         {
             long userId = int.Parse(HttpContext.User.Claims.First(i => i.Type.Equals("id", StringComparison.OrdinalIgnoreCase)).Value);
-            position.TouristId = userId;
-            var httpResponse = await httpClient.PostAsJsonAsync(encounterApi + id + "/isUserInRange/", position);
+            var result = await httpClient.PostAsJsonAsync(encounterApi + "check-range", position);
 
-            if (httpResponse.IsSuccessStatusCode)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return result.IsSuccessStatusCode;
+
         }
 
         [HttpPost("create")]
