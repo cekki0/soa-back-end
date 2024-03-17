@@ -3,6 +3,7 @@ using Explorer.Tours.API.Dtos;
 using Explorer.Tours.API.Public;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Http.Json;
 using System.Security.Claims;
 
 namespace Explorer.API.Controllers.Author
@@ -26,16 +27,29 @@ namespace Explorer.API.Controllers.Author
         }
 
         [HttpGet("authorsFacilities")]
-        public ActionResult<PagedResult<FacilityResponseDto>> GetByAuthorId([FromQuery] int page, [FromQuery] int pageSize)
+        public async Task<ActionResult<PagedResult<FacilityResponseDto>>> GetByAuthorId([FromQuery] int page, [FromQuery] int pageSize)
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
-            var loggedInAuthorId = int.Parse(identity.FindFirst("id").Value);
-            var result = _facilityService.GetPagedByAuthorId(page, pageSize, loggedInAuthorId);
-            return CreateResponse(result);
+            var authorId = int.Parse(identity.FindFirst("id").Value);
+
+            var adress = tourApi + "facilities/" + authorId;
+            var httpResponse = await httpClient.GetAsync(adress);
+
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                var response = await httpResponse.Content.ReadFromJsonAsync<FacilityResponseDto[]>();
+                return Ok(new PagedResult<FacilityResponseDto>(response.ToList(), response.Length));
+            }
+            return new ContentResult
+            {
+                StatusCode = (int)httpResponse.StatusCode,
+                Content = await httpResponse.Content.ReadAsStringAsync(),
+                ContentType = "text/plain"
+            };
         }
 
         [HttpPost]
-        public ActionResult<FacilityResponseDto> Create([FromBody] FacilityCreateDto facility)
+        public async Task<ActionResult<FacilityResponseDto>> Create([FromBody] FacilityCreateDto facility)
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
             if (identity != null && identity.IsAuthenticated)
@@ -43,9 +57,24 @@ namespace Explorer.API.Controllers.Author
                 facility.AuthorId = int.Parse(identity.FindFirst("id").Value);
             }
 
-            var result = _facilityService.Create(facility);
+            var adress = tourApi + "facility";
+            var httpResponse = await httpClient.PostAsJsonAsync(adress, facility);
 
-            return CreateResponse(result);
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                var response = await httpResponse.Content.ReadFromJsonAsync<FacilityResponseDto>();
+                return Ok(response);
+            }
+            return new ContentResult
+            {
+                StatusCode = (int)httpResponse.StatusCode,
+                Content = await httpResponse.Content.ReadAsStringAsync(),
+                ContentType = "text/plain"
+            };
+
+            /*var result = _facilityService.Create(facility);
+
+            return CreateResponse(result);*/
         }
 
         [HttpPut("{id:int}")]
