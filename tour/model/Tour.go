@@ -27,23 +27,23 @@ const (
 )
 
 type Tour struct {
-	ID          int            `json:"Id" gorm:"column:Id"`
-	IsDeleted   bool           `json:"IsDeleted" gorm:"column:IsDeleted" default:"false"`
-	AuthorID    int            `json:"AuthorId" gorm:"column:AuthorId"`
-	Name        string         `json:"Name" gorm:"column:Name"`
-	Description string         `json:"Description" gorm:"column:Description"`
-	Difficulty  int            `json:"Difficulty" gorm:"column:Difficulty;type:integer"`
-	Tags        pq.StringArray `json:"Tags" gorm:"column:Tags;type:text[]"`
-	Status      TourStatus     `json:"Status" gorm:"column:Status;type:integer"`
-	Price       float64        `json:"Price" gorm:"column:Price;type:double precision"`
-	Distance    float64        `json:"Distance" gorm:"column:Distance;type:double precision"`
-	PublishDate NullTime       `json:"PublishDate" gorm:"column:PublishDate;type:time"`
-	ArchiveDate NullTime       `json:"ArchiveDate" gorm:"column:ArchiveDate;type:time"`
-	KeyPoints   []KeyPoint     `json:"KeyPoints,omitempty"`
-	Durations   TourDurations  `json:"Durations" gorm:"column:Durations;type:jsonb"`
-	Reviews     []Review       `json:"Reviews,omitempty"`
-	Category    TourCategory   `json:"Category" gorm:"column:Category;type:integer"`
-	Equipments  []Equipment    `json:"Equipments,omitempty" gorm:"many2many:TourEquipments;"`
+	ID            int            `json:"Id" gorm:"column:Id"`
+	IsDeleted     bool           `json:"IsDeleted" gorm:"column:IsDeleted" default:"false"`
+	AuthorID      int            `json:"AuthorId" gorm:"column:AuthorId"`
+	Name          string         `json:"Name" gorm:"column:Name"`
+	Description   string         `json:"Description" gorm:"column:Description"`
+	Difficulty    int            `json:"Difficulty" gorm:"column:Difficulty;type:integer"`
+	Tags          pq.StringArray `json:"Tags" gorm:"column:Tags;type:text[]"`
+	Status        TourStatus     `json:"Status" gorm:"column:Status;type:integer"`
+	Price         float64        `json:"Price" gorm:"column:Price;type:double precision"`
+	Distance      float64        `json:"Distance" gorm:"column:Distance;type:double precision"`
+	PublishDate   NullTime       `json:"PublishDate" gorm:"column:PublishDate;type:time"`
+	ArchiveDate   NullTime       `json:"ArchiveDate" gorm:"column:ArchiveDate;type:time"`
+	KeyPoints     []KeyPoint     `json:"KeyPoints,omitempty"`
+	Durations     TourDurations  `json:"Durations" gorm:"column:Durations;type:jsonb"`
+	Reviews       []Review       `json:"Reviews,omitempty"`
+	Category      TourCategory   `json:"Category" gorm:"column:Category;type:integer"`
+	EquipmentList []Equipment    `json:"EquipmentList,omitempty" gorm:"many2many:TourEquipments;"`
 }
 
 func (Tour) TableName() string {
