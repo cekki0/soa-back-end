@@ -39,7 +39,7 @@ type Tour struct {
 	Distance      float64        `json:"Distance" gorm:"column:Distance;type:double precision"`
 	PublishDate   NullTime       `json:"PublishDate" gorm:"column:PublishDate;type:time"`
 	ArchiveDate   NullTime       `json:"ArchiveDate" gorm:"column:ArchiveDate;type:time"`
-	KeyPoints     []KeyPoint     `json:"KeyPoints,omitempty"`
+	KeyPoints     []KeyPoint     `json:"KeyPoints"`
 	Durations     TourDurations  `json:"Durations" gorm:"column:Durations;type:jsonb"`
 	Reviews       []Review       `json:"Reviews,omitempty"`
 	Category      TourCategory   `json:"Category" gorm:"column:Category;type:integer"`

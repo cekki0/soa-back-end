@@ -25,7 +25,7 @@ func (repo *KeyPointRepository) Create(keyPoint model.KeyPoint) (model.KeyPoint,
 	jsonSecret, _ := json.Marshal(keyPoint.Secret)
 	dbResult := repo.DatabaseConnection.Raw(`INSERT INTO "tours"."KeyPoints" ("IsDeleted","TourId","Name","Description","Longitude","Latitude","LocationAddress","ImagePath","Order",
 										"HaveSecret","Secret","IsEncounterRequired","HasEncounter") VALUES (false,?,?,?,?,?,?,?,?,?,
-										?,?,?) RETURNING *`, keyPoint.TourID, keyPoint.Name, keyPoint.Description, keyPoint.Latitude, keyPoint.Longitude,
+										?,?,?) RETURNING *`, keyPoint.TourID, keyPoint.Name, keyPoint.Description, keyPoint.Longitude, keyPoint.Latitude,
 		keyPoint.LocationAddress, keyPoint.ImagePath, keyPoint.Order, keyPoint.HaveSecret, string(jsonSecret), keyPoint.IsEncounterRequired, keyPoint.HasEncounter).Scan(&response)
 	if dbResult.Error != nil {
 		return response, dbResult.Error

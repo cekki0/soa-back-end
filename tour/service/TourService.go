@@ -23,6 +23,12 @@ func (service *TourService) FindByAuthor(id string) ([]model.Tour, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to retrieve author tours for id: %s: %w", id, err)
 	}
+
+	for _, tour := range tours {
+		if tour.KeyPoints == nil {
+			tour.KeyPoints = make([]model.KeyPoint, 0)
+		}
+	}
 	return tours, nil
 }
 
