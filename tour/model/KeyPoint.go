@@ -28,12 +28,6 @@ func (KeyPoint) TableName() string {
 }
 
 func (kp KeyPointSecret) Value() (driver.Value, error) {
-	// Check if the KeyPointSecret is empty
-	if len(kp.Images) == 0 && kp.Description == "" {
-		// If it's empty, return the JSON representation of an empty KeyPointSecret
-		return `{"Images": [""], "Description": ""}`, nil
-	}
-	// Otherwise, marshal the KeyPointSecret as usual
 	return json.Marshal(kp)
 }
 

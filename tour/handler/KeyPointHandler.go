@@ -33,13 +33,14 @@ func (handler *KeyPointHanlder) Create(writer http.ResponseWriter, req *http.Req
 		return
 	}
 
-	err = handler.KeyPointService.Create(keyPoint)
+	response, err := handler.KeyPointService.Create(keyPoint)
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	writer.WriteHeader(http.StatusCreated)
+	json.NewEncoder(writer).Encode(response)
 }
 
 func (handler *KeyPointHanlder) FindAll(writer http.ResponseWriter, req *http.Request) {

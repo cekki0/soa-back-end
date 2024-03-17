@@ -4,6 +4,8 @@ using Explorer.Tours.API.Public.TourAuthoring;
 using Explorer.Tours.Core.UseCases.TourAuthoring;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
+using System.Net.Http.Json;
 
 namespace Explorer.API.Controllers.Author.TourAuthoring;
 
@@ -19,11 +21,25 @@ public class KeyPointController : BaseApiController
 
     [Authorize(Roles = "author")]
     [HttpPost("tours/{tourId:long}/key-points")]
-    public ActionResult<KeyPointResponseDto> CreateKeyPoint([FromRoute] long tourId, [FromBody] KeyPointCreateDto keyPoint)
+    public async Task<ActionResult<KeyPointResponseDto>> CreateKeyPoint([FromRoute] long tourId, [FromBody] KeyPointCreateDto keyPoint)
     {
-        keyPoint.TourId = tourId;
+        var adress = tourApi + "keypoint/" + tourId;
+        var httpResponse = await httpClient.PostAsJsonAsync(adress, keyPoint);
+
+        if (httpResponse.IsSuccessStatusCode)
+        {
+            var response = await httpResponse.Content.ReadFromJsonAsync<KeyPointResponseDto>();
+            return Ok(response);
+        }
+        return new ContentResult
+        {
+            StatusCode = (int)httpResponse.StatusCode,
+            Content = await httpResponse.Content.ReadAsStringAsync(),
+            ContentType = "text/plain"
+        };
+        /*keyPoint.TourId = tourId;
         var result = _keyPointService.Create(keyPoint);
-        return CreateResponse(result);
+        return CreateResponse(result);*/
     }
 
     [Authorize(Roles = "author")]

@@ -1,6 +1,6 @@
 package model
 
 type KeyPointSecret struct {
-	Images      []string `json:"images"`
-	Description string   `json:"description"`
+	Images      []string `json:"Images"`
+	Description string   `json:"Description"`
 }

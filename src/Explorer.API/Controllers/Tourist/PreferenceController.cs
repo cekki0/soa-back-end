@@ -1,8 +1,10 @@
-﻿using Explorer.Tours.API.Public;
+﻿using System.Diagnostics;
+using Explorer.Tours.API.Public;
 using Explorer.Tours.API.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using Explorer.Tours.Core.Domain.Tours;
 
 namespace Explorer.API.Controllers.Tourist
 {
@@ -18,25 +20,54 @@ namespace Explorer.API.Controllers.Tourist
         }
 
         [HttpGet]
-        public ActionResult<PreferenceResponseDto> Get()
+        public async Task<ActionResult<PreferenceResponseDto>> Get()
         {
-           // int userId = int.Parse(HttpContext.User.Claims.First(i => i.Type.Equals("id", StringComparison.OrdinalIgnoreCase)).Value);
-            int id = 0;
+            // int userId = int.Parse(HttpContext.User.Claims.First(i => i.Type.Equals("id", StringComparison.OrdinalIgnoreCase)).Value);
+            int touristId = 0;
             var identity = HttpContext.User.Identity as ClaimsIdentity;
             if (identity != null && identity.IsAuthenticated)
             {
-                id = int.Parse(identity.FindFirst("id").Value);
+                touristId = int.Parse(identity.FindFirst("id").Value);
             }
-            var result = _tourPreferencesService.GetByUserId(id);
-            return CreateResponse(result);
+
+            var adress = tourApi + "preference/" + touristId;
+            var httpResponse = await httpClient.GetAsync(adress);
+
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                var response = await httpResponse.Content.ReadFromJsonAsync<PreferenceResponseDto>();
+                return Ok(response);
+            }
+            return new ContentResult
+            {
+                StatusCode = (int)httpResponse.StatusCode,
+                Content = await httpResponse.Content.ReadAsStringAsync(),
+                ContentType = "text/plain"
+            };
         }
 
         [HttpPost("create")]
-        public ActionResult<PreferenceResponseDto> Create([FromBody] PreferenceCreateDto preference)
+        public async Task<ActionResult<PreferenceResponseDto>> Create([FromBody] PreferenceCreateDto preference)
         {
             preference.UserId = int.Parse(HttpContext.User.Claims.First(i => i.Type.Equals("id", StringComparison.OrdinalIgnoreCase)).Value);
+            var adress = tourApi + "preference";
+            var httpResponse = await httpClient.PostAsJsonAsync(adress, preference);
+
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                var response = await httpResponse.Content.ReadFromJsonAsync<TourResponseDto>();
+                return Ok(response);
+            }
+            return new ContentResult
+            {
+                StatusCode = (int)httpResponse.StatusCode,
+                Content = await httpResponse.Content.ReadAsStringAsync(),
+                ContentType = "text/plain"
+            };
+
+            /*preference.UserId = int.Parse(HttpContext.User.Claims.First(i => i.Type.Equals("id", StringComparison.OrdinalIgnoreCase)).Value);
             var result = _tourPreferencesService.Create(preference);
-            return CreateResponse(result);
+            return CreateResponse(result);*/
         }
 
         [HttpDelete("{id:int}")]
