@@ -18,11 +18,12 @@ func (service *KeyPointService) FindById(id string) (*model.KeyPoint, error) {
 	return &keyPoint, nil
 }
 
-func (service *KeyPointService) Create(keyPoint model.KeyPoint) error {
-	if err := service.KeyPointRepo.Create(keyPoint); err != nil {
-		return fmt.Errorf("failed to create key point: %w", err)
+func (service *KeyPointService) Create(keyPoint model.KeyPoint) (model.KeyPoint, error) {
+	response, err := service.KeyPointRepo.Create(keyPoint)
+	if err != nil {
+		return response, fmt.Errorf("failed to create key point: %w", err)
 	}
-	return nil
+	return response, nil
 }
 
 func (service *KeyPointService) FindAll() ([]model.KeyPoint, error) {

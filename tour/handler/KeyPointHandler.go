@@ -1,10 +1,7 @@
 package handler
 
 import (
-	"bytes"
 	"encoding/json"
-	"fmt"
-	"io/ioutil"
 	"net/http"
 	"tour/model"
 	"tour/service"
@@ -29,19 +26,6 @@ func (handler *KeyPointHanlder) FindById(writer http.ResponseWriter, req *http.R
 }
 
 func (handler *KeyPointHanlder) Create(writer http.ResponseWriter, req *http.Request) {
-	bodyBytes, pizdraija := ioutil.ReadAll(req.Body)
-	if pizdraija != nil {
-		http.Error(writer, pizdraija.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	// Now that you've read the body, you need to replace req.Body
-	// with a new reader, so it can be read again later in the function.
-	req.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
-
-	// Print the body
-	fmt.Println("Request Body:", string(bodyBytes))
-
 	var keyPoint model.KeyPoint
 	err := json.NewDecoder(req.Body).Decode(&keyPoint)
 	if err != nil {
@@ -49,13 +33,14 @@ func (handler *KeyPointHanlder) Create(writer http.ResponseWriter, req *http.Req
 		return
 	}
 
-	err = handler.KeyPointService.Create(keyPoint)
+	response, err := handler.KeyPointService.Create(keyPoint)
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	writer.WriteHeader(http.StatusCreated)
+	json.NewEncoder(writer).Encode(response)
 }
 
 func (handler *KeyPointHanlder) FindAll(writer http.ResponseWriter, req *http.Request) {
