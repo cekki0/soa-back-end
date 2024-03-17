@@ -112,34 +112,32 @@ router.post(
 );
 
 router.post(
-  "/:encounterId/completeHiddenEncounter/:userId",
+  "/:encounterId/completeHiddenEncounter/",
   async (
-    req: Request<
-      { encounterId: string; userId: string },
-      {},
-      TouristPoisitionDto
-    >,
+    req: Request<{ encounterId: string }, {}, TouristPoisitionDto>,
     res: Response
   ) => {
     try {
       const encounterId = Number.parseInt(req.params.encounterId);
-
-      const userId = Number.parseInt(req.params.userId);
       const { longitude, latitude } = req.body;
 
       const result = await service.completeHiddenEncounter(
-        userId,
+        req.body.touristId,
         encounterId,
         longitude,
         latitude
       );
+
+      if (!result.success) {
+        throw new Error(result.message);
+      }
 
       return res.json(result);
     } catch (error) {
       console.error(error);
       return res.status(500).json({
         success: false,
-        message: "error while completing hiddennnn encounter",
+        message: "error while completing hidden encounter",
       });
     }
   }

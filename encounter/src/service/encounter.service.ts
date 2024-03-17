@@ -305,16 +305,15 @@ export default class EncounterService {
     try {
       const encounter = await this.getById(encounterId);
       if (
-        this.isUserInCompletionRange(
-          encounter.longitude,
-          encounter.latitude,
+        await this.checkIfUserInCompletionRange(encounterId, {
           longitude,
-          latitude
-        )
+          latitude,
+          touristId: userId,
+        })
       ) {
         return this.completeEncounter(userId, encounter.id);
       }
-      return { success: false, message: "User is not in 5m range" };
+      return { success: false, message: "User is not in range" };
     } catch (error) {
       console.log(error);
       return {
@@ -541,7 +540,7 @@ export default class EncounterService {
     const c: number = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const distance: number = earthRadius * c;
 
-    return distance < 10;
+    return distance < 20;
   }
 
   private addXp(progress: TouristProgress, xpReward: number) {
