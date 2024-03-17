@@ -43,6 +43,7 @@ type Tour struct {
 	Durations   TourDurations  `json:"Durations" gorm:"column:Durations;type:jsonb"`
 	Reviews     []Review       `json:"Reviews,omitempty"`
 	Category    TourCategory   `json:"Category" gorm:"column:Category;type:integer"`
+	Equipments  []Equipment    `json:"Equipments,omitempty" gorm:"many2many:TourEquipments;"`
 }
 
 func (Tour) TableName() string {

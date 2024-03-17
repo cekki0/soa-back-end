@@ -11,6 +11,7 @@ import (
 	"github.com/gorilla/mux"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
 )
 
@@ -23,18 +24,19 @@ func initDB() *gorm.DB {
 		NamingStrategy: schema.NamingStrategy{
 			TablePrefix:   "tours.",
 			SingularTable: false,
+			NoLowerCase:   true,
 		},
+		Logger: logger.Default.LogMode(logger.Info),
 	})
 	if err != nil {
 		print(err)
 		return nil
 	}
-
-	database.AutoMigrate(&model.Tour{}, &model.KeyPoint{}, &model.Review{}, &model.Preference{})
+	database.AutoMigrate(&model.Tour{}, &model.KeyPoint{}, &model.Review{}, &model.Preference{}, &model.Equipment{})
 	return database
 }
 
-func startServer(tourHandler *handler.TourHandler, reviewHandler *handler.ReviewHandler, keyPointHandler *handler.KeyPointHanlder, preferenceHandler *handler.PreferenceHandler) {
+func startServer(tourHandler *handler.TourHandler, reviewHandler *handler.ReviewHandler, keyPointHandler *handler.KeyPointHanlder, preferenceHandler *handler.PreferenceHandler, equipmentHandler *handler.EquipmentHandler) {
 	router := mux.NewRouter().StrictSlash(true)
 
 	router.HandleFunc("/tour/{id}", tourHandler.FindById).Methods("GET")
@@ -52,6 +54,8 @@ func startServer(tourHandler *handler.TourHandler, reviewHandler *handler.Review
 
 	router.HandleFunc("/preference/{touristId}", preferenceHandler.FindByUserId).Methods("GET")
 	router.HandleFunc("/preference", preferenceHandler.Create).Methods("POST")
+
+	router.HandleFunc("/equipments/tour", equipmentHandler.FindAllByTour).Methods("GET")
 
 	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./static")))
 	println("Server is running")
@@ -81,5 +85,9 @@ func main() {
 	preferenceService := &service.PreferenceService{PreferenceRepo: preferenceRepo}
 	preferenceHandler := &handler.PreferenceHandler{PreferenceService: preferenceService}
 
-	startServer(tourHandler, reviewHandler, keyPointHandler, preferenceHandler)
+	equipmentRepo := &repo.EquipmentRepository{DatabaseConnection: database}
+	equipmentService := &service.EquipmentService{EquipmentRepo: equipmentRepo}
+	equipmentHandler := &handler.EquipmentHandler{EquipmentService: equipmentService}
+
+	startServer(tourHandler, reviewHandler, keyPointHandler, preferenceHandler, equipmentHandler)
 }

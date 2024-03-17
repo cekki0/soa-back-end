@@ -13,7 +13,7 @@ type TourRepository struct {
 
 func (repo *TourRepository) FindAll() ([]model.Tour, error) {
 	var tours []model.Tour
-	dbResult := repo.DatabaseConnection.Preload("KeyPoints").Preload("Reviews").Find(&tours)
+	dbResult := repo.DatabaseConnection.Preload("Equipments").Preload("KeyPoints").Preload("Reviews").Find(&tours)
 	if dbResult.Error != nil {
 		return nil, dbResult.Error
 	}
