@@ -2,9 +2,9 @@ CREATE SCHEMA "encounters";
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "encounters"."Encounters" (
 	"Id" serial PRIMARY KEY NOT NULL,
-	"Title" varchar(256) NOT NULL,
-	"Description" varchar(256) NOT NULL,
-	"Picture" varchar(256) NOT NULL,
+	"Title" text NOT NULL,
+	"Description" text NOT NULL,
+	"Picture" text NOT NULL,
 	"Longitude" double precision NOT NULL,
 	"Latitude" double precision NOT NULL,
 	"Radius" double precision NOT NULL,
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS "encounters"."SocialEncounters" (
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "encounters"."TouristProgress" (
-	"Id" bigint PRIMARY KEY NOT NULL,
+	"Id" serial PRIMARY KEY NOT NULL,
 	"UserId" bigint NOT NULL,
 	"Xp" integer NOT NULL,
 	"Level" integer NOT NULL

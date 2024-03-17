@@ -1,5 +1,5 @@
 {
-  "id": "7f830249-9537-4e77-9272-16ad618fa1bb",
+  "id": "7d4f0972-45e7-4c5a-8e61-79a5e7648a22",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "5",
   "dialect": "pg",
@@ -16,19 +16,19 @@
         },
         "Title": {
           "name": "Title",
-          "type": "varchar(256)",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
         "Description": {
           "name": "Description",
-          "type": "varchar(256)",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
         "Picture": {
           "name": "Picture",
-          "type": "varchar(256)",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
@@ -240,7 +240,7 @@
       "columns": {
         "Id": {
           "name": "Id",
-          "type": "bigint",
+          "type": "serial",
           "primaryKey": true,
           "notNull": true
         },

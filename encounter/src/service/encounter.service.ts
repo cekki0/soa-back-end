@@ -254,7 +254,7 @@ export default class EncounterService {
         .select()
         .from(touristProgress)
         .where(eq(touristProgress.userId, userId));
-      if (!queryResult) {
+      if (!queryResult[0]) {
         await db
           .insert(touristProgress)
           .values({ userId: userId, xp: 0, level: 1 });
@@ -302,12 +302,16 @@ export default class EncounterService {
     longitude: number,
     latitude: number
   ) {
-    const a = 5;
-    console.log(encounterId);
-
     try {
       const encounter = await this.getById(encounterId);
-      if (a == 5) {
+      if (
+        this.isUserInCompletionRange(
+          encounter.longitude,
+          encounter.latitude,
+          longitude,
+          latitude
+        )
+      ) {
         return this.completeEncounter(userId, encounter.id);
       }
       return { success: false, message: "User is not in 5m range" };
@@ -537,7 +541,7 @@ export default class EncounterService {
     const c: number = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const distance: number = earthRadius * c;
 
-    return distance < 10000000;
+    return distance < 10;
   }
 
   private addXp(progress: TouristProgress, xpReward: number) {
