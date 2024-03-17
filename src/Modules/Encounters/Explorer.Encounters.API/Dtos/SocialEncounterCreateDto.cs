@@ -11,4 +11,5 @@ public class SocialEncounterCreateDto
     public int XpReward { get; set; }
     public EncounterStatus Status { get; set; }
     public int PeopleNumber { get; set; }
+    public int Type { get; set; }
 }

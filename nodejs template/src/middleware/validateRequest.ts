@@ -1,19 +1,22 @@
 import { Request, Response, NextFunction } from "express";
-import { AnyZodObject } from "zod";
+import { AnyZodObject, z } from "zod";
 
-const validateRequest =
+const validate =
   (schema: AnyZodObject) =>
-  (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
-      schema.parse({
-        body: req.body,
-        query: req.query,
-        params: req.params,
-      });
+      await schema.parseAsync(req.body);
       next();
-    } catch (e: any) {
-      return res.status(400).send(e.errors);
+    } catch (error) {
+      let err = error;
+      if (err instanceof z.ZodError) {
+        err = err.issues.map((e) => ({ path: e.path[0], message: e.message }));
+      }
+      return res.status(400).json({
+        status: "failed",
+        error: err,
+      });
     }
   };
 
-export default validateRequest;
+export default validate;

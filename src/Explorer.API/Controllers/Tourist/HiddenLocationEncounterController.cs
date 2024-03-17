@@ -1,7 +1,6 @@
 ﻿using Explorer.Encounters.API.Dtos;
 using Explorer.Encounters.API.Public;
 using Explorer.Tours.API.Dtos.TouristPosition;
-using FluentResults;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,39 +19,72 @@ namespace Explorer.API.Controllers.Tourist
         }
 
         [HttpGet("{id:long}")]
-        public ActionResult<EncounterResponseDto> GetHiddenLocationEncounterById(long id)
+        public async Task<ActionResult<EncounterResponseDto>> GetHiddenLocationEncounterByIdAsync(long id)
         {
-            var result = _encounterService.GetHiddenLocationEncounterById(id);
-            return CreateResponse(result);
+            var result = await httpClient.GetAsync(encounterApi + id);
+
+            return new ContentResult
+            {
+                StatusCode = (int)result.StatusCode,
+                Content = await result.Content.ReadAsStringAsync(),
+                ContentType = "text/plain"
+            };
         }
 
         [HttpPost("{id:long}/complete")]
-        public ActionResult<EncounterResponseDto> Complete([FromBody] TouristPositionCreateDto position, long id)
+        public async Task<ActionResult<EncounterResponseDto>> CompleteAsync([FromBody] TouristPositionCreateDto position, long id)
         {
             long userId = int.Parse(HttpContext.User.Claims.First(i => i.Type.Equals("id", StringComparison.OrdinalIgnoreCase)).Value);
-            var result = _encounterService.CompleteHiddenLocationEncounter(userId, id, position.Longitude, position.Latitude);
-            return CreateResponse(result);
+            position.TouristId = userId;
+            var result = await httpClient.PostAsJsonAsync(encounterApi + id + "/completeHiddenEncounter/", position);
+
+            if (result.IsSuccessStatusCode)
+            {
+                var response = await result.Content.ReadFromJsonAsync<EncounterResponseDto>();
+                return Ok(response);
+            }
+            else
+            {
+                return new ContentResult
+                {
+                    StatusCode = (int)result.StatusCode,
+                    Content = await result.Content.ReadAsStringAsync(),
+                    ContentType = "text/plain"
+                };
+            }
         }
 
         [HttpPost("{id:long}/check-range")]
-        public bool CheckIfUserInCompletionRange([FromBody] TouristPositionCreateDto position, long id)
+        public async Task<bool> CheckIfUserInCompletionRangeAsync([FromBody] TouristPositionCreateDto position, long id)
         {
             long userId = int.Parse(HttpContext.User.Claims.First(i => i.Type.Equals("id", StringComparison.OrdinalIgnoreCase)).Value);
-            return _encounterService.CheckIfUserInCompletionRange(userId, id, position.Longitude, position.Latitude);
+            position.TouristId = userId;
+            var httpResponse = await httpClient.PostAsJsonAsync(encounterApi + id + "/isUserInRange/", position);
+
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
         }
 
         [HttpPost("create")]
-        public ActionResult<HiddenLocationEncounterResponseDto> Create([FromBody] HiddenLocationEncounterCreateDto encounter)
+        public async Task<ActionResult<HiddenLocationEncounterResponseDto>> CreateAsync([FromBody] HiddenLocationEncounterCreateDto encounter)
         {
-            long userId = int.Parse(HttpContext.User.Claims.First(i => i.Type.Equals("id", StringComparison.OrdinalIgnoreCase)).Value);
-            var progress = _touristProgressService.GetByUserId(userId);
-            if (progress.Value.Level >= 10)
-            {
-                var result = _encounterService.CreateHiddenLocationEncounter(encounter);
-                return CreateResponse(result);
 
-            }
-            return CreateResponse(Result.Fail("Tourist level is not high enough."));
+            encounter.Type = 1;
+            var result = await httpClient.PostAsJsonAsync(encounterApi + "createHiddenEncounter/tourist", encounter);
+
+            return new ContentResult
+            {
+                StatusCode = (int)result.StatusCode,
+                Content = await result.Content.ReadAsStringAsync(),
+                ContentType = "text/plain"
+            };
         }
     }
 }

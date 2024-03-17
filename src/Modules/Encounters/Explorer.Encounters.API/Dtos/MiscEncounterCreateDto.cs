@@ -16,6 +16,7 @@ namespace Explorer.Encounters.API.Dtos
         public double Latitude { get; set; }
         public double Radius { get; set; }
         public int XpReward { get; set; }
+        public int Type {  get; set; }
         public EncounterStatus Status { get; set; }
 
     }
