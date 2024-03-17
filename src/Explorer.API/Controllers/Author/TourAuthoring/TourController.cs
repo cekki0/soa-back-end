@@ -1,6 +1,8 @@
 ﻿using Explorer.BuildingBlocks.Core.UseCases;
+using Explorer.Encounters.API.Dtos;
 using Explorer.Tours.API.Dtos;
 using Explorer.Tours.API.Public;
+using Explorer.Tours.Core.Domain.Tours;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -36,15 +38,58 @@ namespace Explorer.API.Controllers.Author.TourAuthoring
             return CreateResponse(result);
         }
 
+        //[Authorize(Roles = "author, tourist")]
+        //[HttpGet("authors")]
+        //public ActionResult<PagedResult<TourResponseDto>> GetAuthorsTours([FromQuery] int page, [FromQuery] int pageSize)
+        //{
+        //    var identity = HttpContext.User.Identity as ClaimsIdentity;
+        //    var id = long.Parse(identity.FindFirst("id").Value);
+        //    var result = _tourService.GetAuthorsPagedTours(id, page, pageSize);
+        //    return CreateResponse(result);
+        //}
+
         [Authorize(Roles = "author, tourist")]
         [HttpGet("authors")]
-        public ActionResult<PagedResult<TourResponseDto>> GetAuthorsTours([FromQuery] int page, [FromQuery] int pageSize)
+        public async Task<ActionResult<PagedResult<TourResponseDto>>> GetAuthorsTours([FromQuery] int page, [FromQuery] int pageSize)
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
             var id = long.Parse(identity.FindFirst("id").Value);
-            var result = _tourService.GetAuthorsPagedTours(id, page, pageSize);
-            return CreateResponse(result);
+            var httpResponse = await httpClient.GetAsync(tourApi + "tours/author/" + id);
+
+            var responseContent = await httpResponse.Content.ReadAsStringAsync();
+            Trace.WriteLine(responseContent);
+
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                var response = await httpResponse.Content.ReadFromJsonAsync<TourResponseDto[]>();
+                return Ok(new PagedResult<TourResponseDto>(response.ToList(), response.Count()));
+            }
+            return new ContentResult
+            {
+                StatusCode = (int)httpResponse.StatusCode,
+                Content = await httpResponse.Content.ReadAsStringAsync(),
+                ContentType = "text/plain"
+            };
         }
+
+        //[HttpGet("tours/{tourId:long}")]
+        //public async Task<ActionResult<PagedResult<TourResponseDto>>> GetById(long tourId)
+        //{
+        //    var adress = tourApi + "tour/" + tourId;
+        //    var httpResponse = await httpClient.GetAsync(adress);
+
+        //    if (httpResponse.IsSuccessStatusCode)
+        //    {
+        //        var response = await httpResponse.Content.ReadFromJsonAsync<TourResponseDto>();
+        //        return Ok(response);
+        //    }
+        //    return new ContentResult
+        //    {
+        //        StatusCode = (int)httpResponse.StatusCode,
+        //        Content = await httpResponse.Content.ReadAsStringAsync(),
+        //        ContentType = "text/plain"
+        //    };
+        //}
 
         //[Authorize(Roles = "author, tourist")]
         //[HttpPost]

@@ -31,7 +31,10 @@ public class ToursContext : DbContext
         modelBuilder.Entity<Tour>()
             .HasMany(t => t.EquipmentList)
             .WithMany(e => e.Tours)
-            .UsingEntity(j => j.ToTable("TourEquipment"));
+            .UsingEntity<Dictionary<string, object>>("TourEquipments",
+            x => x.HasOne<Equipment>().WithMany().HasForeignKey("EquipmentID"),
+            x => x.HasOne<Tour>().WithMany().HasForeignKey("TourID"),
+            x => x.ToTable("TourEquipments"));
 
         ConfigureKeyPoint(modelBuilder);
 

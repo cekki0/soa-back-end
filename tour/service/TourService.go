@@ -10,6 +10,22 @@ type TourService struct {
 	TourRepo *repo.TourRepository
 }
 
+func (service *TourService) FindAll() ([]model.Tour, error) {
+	tours, err := service.TourRepo.FindAll()
+	if err != nil {
+		return nil, fmt.Errorf("failed to retrieve tours: %w", err)
+	}
+	return tours, nil
+}
+
+func (service *TourService) FindByAuthor(id string) ([]model.Tour, error) {
+	tours, err := service.TourRepo.FindByAuthor(id)
+	if err != nil {
+		return nil, fmt.Errorf("failed to retrieve author tours for id: %s: %w", id, err)
+	}
+	return tours, nil
+}
+
 func (service *TourService) FindById(id string) (*model.Tour, error) {
 	tour, err := service.TourRepo.FindById(id)
 	if err != nil {
@@ -24,12 +40,4 @@ func (service *TourService) Create(tour model.Tour) (model.Tour, error) {
 		return model.Tour{}, err
 	}
 	return createdTour, nil
-}
-
-func (service *TourService) FindAll() ([]model.Tour, error) {
-	tours, err := service.TourRepo.FindAll()
-	if err != nil {
-		return nil, fmt.Errorf("failed to retrieve tours: %w", err)
-	}
-	return tours, nil
 }

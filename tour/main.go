@@ -11,6 +11,7 @@ import (
 	"github.com/gorilla/mux"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
 )
 
@@ -23,22 +24,24 @@ func initDB() *gorm.DB {
 		NamingStrategy: schema.NamingStrategy{
 			TablePrefix:   "tours.",
 			SingularTable: false,
+			NoLowerCase:   true,
 		},
+		Logger: logger.Default.LogMode(logger.Info),
 	})
 	if err != nil {
 		print(err)
 		return nil
 	}
-
-	database.AutoMigrate(&model.Tour{}, &model.KeyPoint{}, &model.Review{}, &model.Preference{}, &model.Facility{})
+	database.AutoMigrate(&model.Tour{}, &model.KeyPoint{}, &model.Review{}, &model.Preference{}, &model.Facility{}, &model.Equipment{})
 	return database
 }
 
-func startServer(tourHandler *handler.TourHandler, reviewHandler *handler.ReviewHandler, keyPointHandler *handler.KeyPointHanlder, preferenceHandler *handler.PreferenceHandler, facilityHandler *handler.FacilityHandler) {
+func startServer(tourHandler *handler.TourHandler, reviewHandler *handler.ReviewHandler, keyPointHandler *handler.KeyPointHanlder, preferenceHandler *handler.PreferenceHandler, equipmentHandler *handler.EquipmentHandler, facilityHandler *handler.FacilityHandler) {
 	router := mux.NewRouter().StrictSlash(true)
 
 	router.HandleFunc("/tour/{id}", tourHandler.FindById).Methods("GET")
 	router.HandleFunc("/tours", tourHandler.FindAll).Methods("GET")
+	router.HandleFunc("/tours/author/{id}", tourHandler.FindByAuthor).Methods("GET")
 	router.HandleFunc("/tour", tourHandler.Create).Methods("POST")
 
 	router.HandleFunc("/review/{id}", reviewHandler.FindById).Methods("GET")
@@ -52,6 +55,8 @@ func startServer(tourHandler *handler.TourHandler, reviewHandler *handler.Review
 
 	router.HandleFunc("/facility", facilityHandler.Create).Methods("POST")
 	router.HandleFunc("/facilities/{authorId}", facilityHandler.FindByAuthor).Methods("GET")
+
+	router.HandleFunc("/equipments/tour", equipmentHandler.FindAllByTour).Methods("GET")
 
 	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./static")))
 	println("Server is running")
@@ -85,5 +90,9 @@ func main() {
 	facilityService := &service.FacilityService{FacilityRepo: facilityRepo}
 	facilityHandler := &handler.FacilityHandler{FacilityService: facilityService}
 
-	startServer(tourHandler, reviewHandler, keyPointHandler, preferenceHandler, facilityHandler)
+	equipmentRepo := &repo.EquipmentRepository{DatabaseConnection: database}
+	equipmentService := &service.EquipmentService{EquipmentRepo: equipmentRepo}
+	equipmentHandler := &handler.EquipmentHandler{EquipmentService: equipmentService}
+
+	startServer(tourHandler, reviewHandler, keyPointHandler, preferenceHandler, equipmentHandler, facilityHandler)
 }

@@ -11,6 +11,24 @@ type TourRepository struct {
 	DatabaseConnection *gorm.DB
 }
 
+func (repo *TourRepository) FindAll() ([]model.Tour, error) {
+	var tours []model.Tour
+	dbResult := repo.DatabaseConnection.Preload("EquipmentList").Preload("KeyPoints").Preload("Reviews").Find(&tours)
+	if dbResult.Error != nil {
+		return nil, dbResult.Error
+	}
+	return tours, nil
+}
+
+func (repo *TourRepository) FindByAuthor(id string) ([]model.Tour, error) {
+	var tours []model.Tour
+	dbResult := repo.DatabaseConnection.Preload("KeyPoints").Preload("Reviews").Where(`"AuthorId" = ?`, id).Find(&tours)
+	if dbResult.Error != nil {
+		return nil, dbResult.Error
+	}
+	return tours, nil
+}
+
 func (repo *TourRepository) FindById(id string) (model.Tour, error) {
 	tour := model.Tour{}
 	dbResult := repo.DatabaseConnection.Preload("KeyPoints").Preload("Reviews").First(&tour, `"Id" = ?`, id)
@@ -29,13 +47,4 @@ func (repo *TourRepository) Create(tour model.Tour) (model.Tour, error) {
 	}
 	fmt.Println("sacuvano")
 	return tour, nil
-}
-
-func (repo *TourRepository) FindAll() ([]model.Tour, error) {
-	var tours []model.Tour
-	dbResult := repo.DatabaseConnection.Preload("KeyPoints").Preload("Reviews").Find(&tours)
-	if dbResult.Error != nil {
-		return nil, dbResult.Error
-	}
-	return tours, nil
 }
