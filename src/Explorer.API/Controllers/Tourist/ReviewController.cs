@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.Diagnostics;
+using System.Security.Claims;
 using Explorer.BuildingBlocks.Core.UseCases;
 using Explorer.Tours.API.Dtos;
 using Explorer.Tours.API.Public;
@@ -34,18 +35,42 @@ namespace Explorer.API.Controllers.Tourist
             return result.Value;
         }
 
+        //[Authorize(Policy = "touristPolicy")]
+        //[HttpPost]
+        //public ActionResult<ReviewResponseDto> Create([FromBody] ReviewCreateDto review)
+        //{
+        //    var identity = HttpContext.User.Identity as ClaimsIdentity;
+        //    if (identity != null && identity.IsAuthenticated)
+        //    { 
+        //      review.TouristId = long.Parse(identity.FindFirst("id").Value);  
+        //    }
+        //    review.CommentDate = DateOnly.FromDateTime(DateTime.Now);
+        //    var result = _reviewService.Create(review);
+        //    return CreateResponse(result);
+        //}
+
         [Authorize(Policy = "touristPolicy")]
         [HttpPost]
-        public ActionResult<ReviewResponseDto> Create([FromBody] ReviewCreateDto review)
+        public async Task<ActionResult<ReviewResponseDto>> Create([FromBody] ReviewCreateDto review)
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
             if (identity != null && identity.IsAuthenticated)
-            { 
-              review.TouristId = long.Parse(identity.FindFirst("id").Value);  
+            {
+                review.TouristId = long.Parse(identity.FindFirst("id").Value);
             }
             review.CommentDate = DateOnly.FromDateTime(DateTime.Now);
-            var result = _reviewService.Create(review);
-            return CreateResponse(result);
+            var httpResponse = await httpClient.PostAsJsonAsync(tourApi + "review", review);
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                var response = await httpResponse.Content.ReadFromJsonAsync<ReviewResponseDto>();
+                return Ok(response);
+            }
+            return new ContentResult
+            {
+                StatusCode = (int)httpResponse.StatusCode,
+                Content = await httpResponse.Content.ReadAsStringAsync(),
+                ContentType = "text/plain"
+            };
         }
 
         [Authorize(Policy = "touristPolicy")]

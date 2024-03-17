@@ -13,16 +13,39 @@ type TourHandler struct {
 	TourService *service.TourService
 }
 
+func (handler *TourHandler) FindAll(writer http.ResponseWriter, req *http.Request) {
+	tours, err := handler.TourService.FindAll()
+	if err != nil {
+		http.Error(writer, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	writer.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(writer).Encode(tours)
+}
+
 func (handler *TourHandler) FindById(writer http.ResponseWriter, req *http.Request) {
 	id := mux.Vars(req)["id"]
-	student, err := handler.TourService.FindById(id)
+	tour, err := handler.TourService.FindById(id)
 	writer.Header().Set("Content-Type", "application/json")
 	if err != nil {
 		writer.WriteHeader(http.StatusNotFound)
 		return
 	}
 	writer.WriteHeader(http.StatusOK)
-	json.NewEncoder(writer).Encode(student)
+	json.NewEncoder(writer).Encode(tour)
+}
+
+func (handler *TourHandler) FindByAuthor(writer http.ResponseWriter, req *http.Request) {
+	id := mux.Vars(req)["id"]
+	tours, err := handler.TourService.FindByAuthor(id)
+	if err != nil {
+		http.Error(writer, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	writer.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(writer).Encode(tours)
 }
 
 func (handler *TourHandler) Create(writer http.ResponseWriter, req *http.Request) {
@@ -33,22 +56,19 @@ func (handler *TourHandler) Create(writer http.ResponseWriter, req *http.Request
 		return
 	}
 
-	err = handler.TourService.Create(tour)
+	createdTour, err := handler.TourService.Create(tour)
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	writer.WriteHeader(http.StatusCreated)
-}
-
-func (handler *TourHandler) FindAll(writer http.ResponseWriter, req *http.Request) {
-	tours, err := handler.TourService.FindAll()
+	jsonResponse, err := json.Marshal(createdTour)
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	writer.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(writer).Encode(tours)
+	writer.WriteHeader(http.StatusCreated)
+	writer.Write(jsonResponse)
 }

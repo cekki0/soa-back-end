@@ -8,6 +8,7 @@ namespace Explorer.API.Controllers;
 public class BaseApiController : ControllerBase
 {
     protected string encounterApi = "http://localhost:8089/api/";
+    protected string tourApi = "http://localhost:8080/";
 
     protected static HttpClient httpClient = new()
     {

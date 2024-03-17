@@ -1,8 +1,12 @@
 ﻿using Explorer.BuildingBlocks.Core.UseCases;
+using Explorer.Encounters.API.Dtos;
 using Explorer.Tours.API.Dtos;
 using Explorer.Tours.API.Public;
+using Explorer.Tours.Core.Domain.Tours;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 using System.Security.Claims;
 
 namespace Explorer.API.Controllers.Author.TourAuthoring
@@ -20,7 +24,7 @@ namespace Explorer.API.Controllers.Author.TourAuthoring
 
         [Authorize(Roles = "author")]
         [HttpGet]
-        public ActionResult<PagedResult<TourResponseDto>> GetAll([FromQuery] int page, [FromQuery] int pageSize)
+        public async Task<ActionResult<PagedResult<TourResponseDto>>> GetAll([FromQuery] int page, [FromQuery] int pageSize)
         {
             var result = _tourService.GetAllPaged(page, pageSize);
             return CreateResponse(result);
@@ -36,26 +40,52 @@ namespace Explorer.API.Controllers.Author.TourAuthoring
 
         [Authorize(Roles = "author, tourist")]
         [HttpGet("authors")]
-        public ActionResult<PagedResult<TourResponseDto>> GetAuthorsTours([FromQuery] int page, [FromQuery] int pageSize)
+        public async Task<ActionResult<PagedResult<TourResponseDto>>> GetAuthorsTours([FromQuery] int page, [FromQuery] int pageSize)
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
             var id = long.Parse(identity.FindFirst("id").Value);
-            var result = _tourService.GetAuthorsPagedTours(id, page, pageSize);
-            return CreateResponse(result);
+            var httpResponse = await httpClient.GetAsync(tourApi + "tours/author/" + id);
+
+            var responseContent = await httpResponse.Content.ReadAsStringAsync();
+            Trace.WriteLine(responseContent);
+
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                var response = await httpResponse.Content.ReadFromJsonAsync<TourResponseDto[]>();
+                return Ok(new PagedResult<TourResponseDto>(response.ToList(), response.Count()));
+            }
+            return new ContentResult
+            {
+                StatusCode = (int)httpResponse.StatusCode,
+                Content = await httpResponse.Content.ReadAsStringAsync(),
+                ContentType = "text/plain"
+            };
         }
+
 
         [Authorize(Roles = "author, tourist")]
         [HttpPost]
-        public ActionResult<TourResponseDto> Create([FromBody] TourCreateDto tour)
+        public async Task<ActionResult<TourResponseDto>> Create([FromBody] TourCreateDto tour)
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
             if (identity != null && identity.IsAuthenticated)
             {
                 tour.AuthorId = long.Parse(identity.FindFirst("id").Value);
             }
-            var result = _tourService.Create(tour);
-            return CreateResponse(result);
+            var httpResponse = await httpClient.PostAsJsonAsync(tourApi + "tour", tour);
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                var response = await httpResponse.Content.ReadFromJsonAsync<TourResponseDto>();
+                return Ok(response);
+            }
+            return new ContentResult
+            {
+                StatusCode = (int)httpResponse.StatusCode,
+                Content = await httpResponse.Content.ReadAsStringAsync(),
+                ContentType = "text/plain"
+            };
         }
+
 
         [Authorize(Roles = "author, tourist")]
         [HttpPut("{id:int}")]
@@ -79,27 +109,57 @@ namespace Explorer.API.Controllers.Author.TourAuthoring
         }
 
         [Authorize(Roles = "author, tourist")]
-        [HttpGet("equipment/{tourId:int}")]
-        public ActionResult GetEquipment(int tourId)
+        [HttpGet("equipment/{id:int}")]
+        public async Task<ActionResult> GetEquipment(int id)
         {
-            var result = _tourService.GetEquipment(tourId);
-            return CreateResponse(result);
+            var httpResponse = await httpClient.GetAsync(tourApi + "equipments/tour/" + id);
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                var response = await httpResponse.Content.ReadFromJsonAsync<EquipmentResponseDto[]>();
+                return Ok(new PagedResult<EquipmentResponseDto>(response.ToList(), response.Count()));
+            }
+            return new ContentResult
+            {
+                StatusCode = (int)httpResponse.StatusCode,
+                Content = await httpResponse.Content.ReadAsStringAsync(),
+                ContentType = "text/plain"
+            };
         }
 
         [Authorize(Roles = "author, tourist")]
-        [HttpPost("equipment/{tourId:int}/{equipmentId:int}")]
-        public ActionResult AddEquipment(int tourId, int equipmentId)
+        [HttpGet("equipment/add/{tourId:int}/{equipmentId:int}")]
+        public async Task<ActionResult> AddEquipment(int tourId, int equipmentId)
         {
-            var result = _tourService.AddEquipment(tourId, equipmentId);
-            return CreateResponse(result);
+            var httpResponse = await httpClient.GetAsync(tourApi + "equipment/add/" + equipmentId + "/tour/" + tourId);
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                var response = await httpResponse.Content.ReadFromJsonAsync<EquipmentResponseDto>();
+                return Ok(response);
+            }
+            return new ContentResult
+            {
+                StatusCode = (int)httpResponse.StatusCode,
+                Content = await httpResponse.Content.ReadAsStringAsync(),
+                ContentType = "text/plain"
+            };
         }
 
         [Authorize(Roles = "author, tourist")]
-        [HttpDelete("equipment/{tourId:int}/{equipmentId:int}")]
-        public ActionResult DeleteEquipment(int tourId, int equipmentId)
+        [HttpGet("equipment/remove/{tourId:int}/{equipmentId:int}")]
+        public async Task<ActionResult> RemoveEquipment(int tourId, int equipmentId)
         {
-            var result = _tourService.DeleteEquipment(tourId, equipmentId);
-            return CreateResponse(result);
+            var httpResponse = await httpClient.GetAsync(tourApi + "equipment/remove/" + equipmentId + "/tour/" + tourId);
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                var response = await httpResponse.Content.ReadFromJsonAsync<EquipmentResponseDto>();
+                return Ok(response);
+            }
+            return new ContentResult
+            {
+                StatusCode = (int)httpResponse.StatusCode,
+                Content = await httpResponse.Content.ReadAsStringAsync(),
+                ContentType = "text/plain"
+            };
         }
 
         [Authorize(Roles = "author, tourist")]

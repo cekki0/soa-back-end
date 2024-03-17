@@ -23,6 +23,7 @@ namespace Explorer.API.Controllers.Tourist.MarketPlace
             var result = _keyPointService.GetByTourId(tourId);
             return CreateResponse(result);
         }
+
         [Authorize(Roles = "tourist")]
         [HttpGet("{campaignId:long}/key-points")]
         public ActionResult<KeyPointResponseDto> GetCampaignKeyPoints(long campaignId)
