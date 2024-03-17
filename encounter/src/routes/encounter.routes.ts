@@ -123,6 +123,7 @@ router.post(
   ) => {
     try {
       const encounterId = Number.parseInt(req.params.encounterId);
+
       const userId = Number.parseInt(req.params.userId);
       const { longitude, latitude } = req.body;
 
@@ -138,7 +139,7 @@ router.post(
       console.error(error);
       return res.status(500).json({
         success: false,
-        message: "error while completing hidden encounter",
+        message: "error while completing hiddennnn encounter",
       });
     }
   }

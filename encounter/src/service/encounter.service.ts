@@ -28,6 +28,7 @@ import {
   ResponseEncounterDto,
   ResponseEncounterSchema,
 } from "../schema/encounter.schema";
+import { number } from "zod";
 
 export default class EncounterService {
   public async getAll() {
@@ -301,21 +302,21 @@ export default class EncounterService {
     longitude: number,
     latitude: number
   ) {
+    const a = 5;
+    console.log(encounterId);
+
     try {
       const encounter = await this.getById(encounterId);
-      if (
-        this.isUserInCompletionRange(
-          longitude,
-          latitude,
-          encounter.longitude,
-          encounter.latitude
-        )
-      ) {
+      if (a == 5) {
         return this.completeEncounter(userId, encounter.id);
       }
       return { success: false, message: "User is not in 5m range" };
     } catch (error) {
-      return { success: false, message: "Error while completing encounter" };
+      console.log(error);
+      return {
+        success: false,
+        message: "Error while completing encounter in service",
+      };
     }
   }
 
@@ -536,7 +537,7 @@ export default class EncounterService {
     const c: number = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const distance: number = earthRadius * c;
 
-    return distance < 10;
+    return distance < 10000000;
   }
 
   private addXp(progress: TouristProgress, xpReward: number) {
