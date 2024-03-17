@@ -1,10 +1,10 @@
 package model
 
 type TourEquipment struct {
-	EquipmentID int `json:"EquipmentListId" gorm:"primaryKey;column:EquipmentListId"`
-	TourID      int `json:"ToursId" gorm:"primaryKey;column:ToursId"`
+	EquipmentID int `json:"EquipmentID" gorm:"primaryKey"`
+	TourID      int `json:"TourID" gorm:"primaryKey"`
 }
 
 func (TourEquipment) TableName() string {
-	return `tours."TourEquipment"`
+	return `tours."TourEquipments"`
 }

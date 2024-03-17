@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 	"tour/service"
+
+	"github.com/gorilla/mux"
 )
 
 type EquipmentHandler struct {
@@ -11,7 +13,8 @@ type EquipmentHandler struct {
 }
 
 func (handler *EquipmentHandler) FindAllByTour(writer http.ResponseWriter, req *http.Request) {
-	equipments, err := handler.EquipmentService.FindAllByTour()
+	id := mux.Vars(req)["id"]
+	equipments, err := handler.EquipmentService.FindAllByTour(id)
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
 		return
@@ -19,4 +22,30 @@ func (handler *EquipmentHandler) FindAllByTour(writer http.ResponseWriter, req *
 
 	writer.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(writer).Encode(equipments)
+}
+
+func (handler *EquipmentHandler) AddEquipmentToTour(writer http.ResponseWriter, req *http.Request) {
+	equipmentID := mux.Vars(req)["equipmentId"]
+	tourID := mux.Vars(req)["tourId"]
+	tour, err := handler.EquipmentService.AddEquipmentToTour(equipmentID, tourID)
+	writer.Header().Set("Content-Type", "application/json")
+	if err != nil {
+		writer.WriteHeader(http.StatusNotFound)
+		return
+	}
+	writer.WriteHeader(http.StatusOK)
+	json.NewEncoder(writer).Encode(tour)
+}
+
+func (handler *EquipmentHandler) RemoveEquipmentToTour(writer http.ResponseWriter, req *http.Request) {
+	equipmentID := mux.Vars(req)["equipmentId"]
+	tourID := mux.Vars(req)["tourId"]
+	tour, err := handler.EquipmentService.RemoveEquipmentToTour(equipmentID, tourID)
+	writer.Header().Set("Content-Type", "application/json")
+	if err != nil {
+		writer.WriteHeader(http.StatusNotFound)
+		return
+	}
+	writer.WriteHeader(http.StatusOK)
+	json.NewEncoder(writer).Encode(tour)
 }

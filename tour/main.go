@@ -55,7 +55,9 @@ func startServer(tourHandler *handler.TourHandler, reviewHandler *handler.Review
 	router.HandleFunc("/preference/{touristId}", preferenceHandler.FindByUserId).Methods("GET")
 	router.HandleFunc("/preference", preferenceHandler.Create).Methods("POST")
 
-	router.HandleFunc("/equipments/tour", equipmentHandler.FindAllByTour).Methods("GET")
+	router.HandleFunc("/equipments/tour/{id}", equipmentHandler.FindAllByTour).Methods("GET")
+	router.HandleFunc("/equipment/add/{equipmentId}/tour/{tourId}", equipmentHandler.AddEquipmentToTour).Methods("GET")
+	router.HandleFunc("/equipment/remove/{equipmentId}/tour/{tourId}", equipmentHandler.RemoveEquipmentToTour).Methods("GET")
 
 	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./static")))
 	println("Server is running")
