@@ -1,6 +1,5 @@
 ﻿using Explorer.Encounters.API.Dtos;
 using Explorer.Encounters.API.Public;
-using FluentResults;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,8 +21,9 @@ namespace Explorer.API.Controllers.Tourist
         [HttpPost("createMisc")]
         public async Task<ActionResult<MiscEncounterResponseDto>> CreateAsync([FromBody] MiscEncounterCreateDto encounter)
         {
-            encounter.Type=2;
-            var result = await httpClient.PostAsJsonAsync(encounterApi + "createMiscEncounter/tourist", encounter);
+            long userId = int.Parse(HttpContext.User.Claims.First(i => i.Type.Equals("id", StringComparison.OrdinalIgnoreCase)).Value);
+            encounter.Type = 2;
+            var result = await httpClient.PostAsJsonAsync(encounterApi + "createMiscEncounter/tourist/" + userId, encounter);
 
             return new ContentResult
             {
