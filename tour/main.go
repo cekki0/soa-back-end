@@ -32,11 +32,11 @@ func initDB() *gorm.DB {
 		print(err)
 		return nil
 	}
-	database.AutoMigrate(&model.Tour{}, &model.KeyPoint{}, &model.Review{}, &model.Preference{}, &model.Equipment{})
+	database.AutoMigrate(&model.Tour{}, &model.KeyPoint{}, &model.Review{}, &model.Preference{}, &model.Facility{}, &model.Equipment{})
 	return database
 }
 
-func startServer(tourHandler *handler.TourHandler, reviewHandler *handler.ReviewHandler, keyPointHandler *handler.KeyPointHanlder, preferenceHandler *handler.PreferenceHandler, equipmentHandler *handler.EquipmentHandler) {
+func startServer(tourHandler *handler.TourHandler, reviewHandler *handler.ReviewHandler, keyPointHandler *handler.KeyPointHanlder, preferenceHandler *handler.PreferenceHandler, equipmentHandler *handler.EquipmentHandler, facilityHandler *handler.FacilityHandler) {
 	router := mux.NewRouter().StrictSlash(true)
 
 	router.HandleFunc("/tour/{id}", tourHandler.FindById).Methods("GET")
@@ -48,12 +48,13 @@ func startServer(tourHandler *handler.TourHandler, reviewHandler *handler.Review
 	router.HandleFunc("/reviews", reviewHandler.FindAll).Methods("GET")
 	router.HandleFunc("/review", reviewHandler.Create).Methods("POST")
 
-	// router.HandleFunc("/keypoint/{id}", keyPointHandler.FindById).Methods("GET")
-	// router.HandleFunc("/keypoints", keyPointHandler.FindAll).Methods("GET")
 	router.HandleFunc("/keypoint/{tourId}", keyPointHandler.Create).Methods("POST")
 
 	router.HandleFunc("/preference/{touristId}", preferenceHandler.FindByUserId).Methods("GET")
 	router.HandleFunc("/preference", preferenceHandler.Create).Methods("POST")
+
+	router.HandleFunc("/facility", facilityHandler.Create).Methods("POST")
+	router.HandleFunc("/facilities/{authorId}", facilityHandler.FindByAuthor).Methods("GET")
 
 	router.HandleFunc("/equipments/tour/{id}", equipmentHandler.FindAllByTour).Methods("GET")
 	router.HandleFunc("/equipment/add/{equipmentId}/tour/{tourId}", equipmentHandler.AddEquipmentToTour).Methods("GET")
@@ -87,9 +88,13 @@ func main() {
 	preferenceService := &service.PreferenceService{PreferenceRepo: preferenceRepo}
 	preferenceHandler := &handler.PreferenceHandler{PreferenceService: preferenceService}
 
+	facilityRepo := &repo.FacilityRepository{DatabaseConnection: database}
+	facilityService := &service.FacilityService{FacilityRepo: facilityRepo}
+	facilityHandler := &handler.FacilityHandler{FacilityService: facilityService}
+
 	equipmentRepo := &repo.EquipmentRepository{DatabaseConnection: database}
 	equipmentService := &service.EquipmentService{EquipmentRepo: equipmentRepo}
 	equipmentHandler := &handler.EquipmentHandler{EquipmentService: equipmentService}
 
-	startServer(tourHandler, reviewHandler, keyPointHandler, preferenceHandler, equipmentHandler)
+	startServer(tourHandler, reviewHandler, keyPointHandler, preferenceHandler, equipmentHandler, facilityHandler)
 }
