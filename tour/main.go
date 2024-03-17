@@ -39,6 +39,7 @@ func startServer(tourHandler *handler.TourHandler, reviewHandler *handler.Review
 
 	router.HandleFunc("/tour/{id}", tourHandler.FindById).Methods("GET")
 	router.HandleFunc("/tours", tourHandler.FindAll).Methods("GET")
+	router.HandleFunc("/tours/author/{id}", tourHandler.FindByAuthor).Methods("GET")
 	router.HandleFunc("/tour", tourHandler.Create).Methods("POST")
 
 	router.HandleFunc("/review/{id}", reviewHandler.FindById).Methods("GET")
