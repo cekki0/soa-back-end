@@ -8,7 +8,7 @@ namespace Explorer.API.Controllers;
 public class BaseApiController : ControllerBase
 {
     protected string encounterApi = $"http://{Environment.GetEnvironmentVariable("ENCOUNTER_HOST") ?? "localhost"}:{Environment.GetEnvironmentVariable("ENCOUNTER_PORT") ?? "8089"}/api/";
-    protected string tourApi = $"http://{Environment.GetEnvironmentVariable("TOUR_HOST") ?? "localhost"}:{Environment.GetEnvironmentVariable("TOUR_PORT") ?? "8080"}/api/";
+    protected string tourApi = $"http://{Environment.GetEnvironmentVariable("TOUR_HOST") ?? "localhost"}:{Environment.GetEnvironmentVariable("TOUR_PORT") ?? "8080"}/";
 
     protected static HttpClient httpClient = new()
     {

@@ -1,9 +1,10 @@
 FROM golang:latest
 
-WORKDIR /app
+WORKDIR /go
 
+COPY go.mod .
+COPY go.sum .
+RUN go mod download
 COPY . .
-
-EXPOSE 8080
-
-ENTRYPOINT [ "go", "run", "main.go" ]
+RUN go build -o ./build/tour
+ENTRYPOINT ["./build/tour"]
