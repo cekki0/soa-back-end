@@ -9,8 +9,8 @@ import (
 	"tour/repo"
 	"tour/service"
 
-	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -65,11 +65,9 @@ func startServer(tourHandler *handler.TourHandler, reviewHandler *handler.Review
 	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./static")))
 	println("Server is running")
 
-	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With"})
-	originsOk := handlers.AllowedOrigins([]string{"*"})
-	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
+	handler := cors.Default().Handler(router)
 
-	log.Fatal(http.ListenAndServe(":8080", handlers.CORS(originsOk, headersOk, methodsOk)(router)))
+	log.Fatal(http.ListenAndServe(":8080", handler))
 }
 
 func main() {
