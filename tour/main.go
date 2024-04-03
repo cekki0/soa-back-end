@@ -8,6 +8,7 @@ import (
 	"tour/repo"
 	"tour/service"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gorilla/mux"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -62,6 +63,8 @@ func startServer(tourHandler *handler.TourHandler, reviewHandler *handler.Review
 
 	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./static")))
 	println("Server is running")
+	router.Use(cors.Default())
+
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
 
