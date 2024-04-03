@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 	"net/http"
 	"tour/handler"
 	"tour/model"
@@ -17,7 +18,7 @@ import (
 )
 
 func initDB() *gorm.DB {
-	dsn := "host=localhost user=postgres password=super dbname=explorer-v1 port=5432 sslmode=disable"
+	dsn := "host="+os.Getenv("DB_HOST")+" user="+os.Getenv("DB_USER")+" password="+os.Getenv("DB_PASSWORD")+" dbname="+os.Getenv("DB_DATABASE")+" port="+os.Getenv("DB_PORT")+" sslmode=disable"
 	database, err := gorm.Open(postgres.New(postgres.Config{
 		DSN:                  dsn,
 		PreferSimpleProtocol: true,

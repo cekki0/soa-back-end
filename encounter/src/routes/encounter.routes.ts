@@ -222,12 +222,18 @@ router.post(
 );
 
 router.post(
-  "/createMiscEncounter/tourist",
+  "/createMiscEncounter/tourist/:userId",
   validateRequest(MiscEncountersSchema),
-  async (req: Request<{}, {}, CreateMiscEncounterDto>, res: Response) => {
+  async (
+    req: Request<{ userId: string }, {}, CreateMiscEncounterDto>,
+    res: Response
+  ) => {
     try {
       const encounter = req.body;
-      const result = await service.createMiscEncounterTourist(encounter);
+      const result = await service.createMiscEncounterTourist(
+        encounter,
+        Number.parseInt(req.params.userId)
+      );
       return res.status(200).json(result);
     } catch (error) {
       console.error("error while creating misc encounter tourist:", error);
@@ -256,12 +262,18 @@ router.post(
 );
 
 router.post(
-  "/createSocialEncounter/tourist",
+  "/createSocialEncounter/tourist/:userId",
   validateRequest(SocialEncounterSchema),
-  async (req: Request<{}, {}, CreateSocialEncounterDto>, res: Response) => {
+  async (
+    req: Request<{ userId: string }, {}, CreateSocialEncounterDto>,
+    res: Response
+  ) => {
     try {
       const encounter = req.body;
-      const result = await service.createSocialEncounterTourist(encounter);
+      const result = await service.createSocialEncounterTourist(
+        encounter,
+        Number.parseInt(req.params.userId)
+      );
       return res.status(200).json(result);
     } catch (error) {
       console.error("error while creating social encounter tourist:", error);
@@ -273,12 +285,18 @@ router.post(
 );
 
 router.post(
-  "/createHiddenEncounter/tourist",
+  "/createHiddenEncounter/tourist/:userId",
   validateRequest(HiddenEncounterSchema),
-  async (req: Request<{}, {}, CreateHiddenEncounterDto>, res: Response) => {
+  async (
+    req: Request<{ userId: string }, {}, CreateHiddenEncounterDto>,
+    res: Response
+  ) => {
     try {
       const encounter = req.body;
-      const result = await service.createHiddenEncounterTourist(encounter);
+      const result = await service.createHiddenEncounterTourist(
+        encounter,
+        Number.parseInt(req.params.userId)
+      );
       return res.status(200).json(result);
     } catch (error) {
       console.error("error while creating hidden encounter: tourist", error);

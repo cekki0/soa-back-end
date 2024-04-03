@@ -8,14 +8,14 @@ const router = Router();
 const service = new ExampleService();
 
 router.get("/", async (req: Request, res: Response) => {
-  const result = await service.getAll();
+  const result = await service.getFirst();
   res.send(result);
 });
 
 router.post(
-  "/",
+  "/:id",
   validateRequest(ExampleSchema),
-  (req: Request<{}, {}, ExampleDto>, res: Response) => {
+  (req: Request<{ id: string }, {}, ExampleDto>, res: Response) => {
     res.sendStatus(200);
   }
 );
