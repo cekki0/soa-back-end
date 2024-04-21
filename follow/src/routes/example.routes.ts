@@ -1,15 +1,15 @@
 import { Router, Request, Response } from "express";
-import ExampleService from "../service/example.service";
+import FollowService from "../service/follow.service";
 import validateRequest from "../middleware/validateRequest";
 import { ExampleSchema, ExampleDto } from "../schema/example.schema";
 
 const router = Router();
 
-const service = new ExampleService();
+const service = new FollowService();
 
 router.get("/", async (req: Request, res: Response) => {
-  const result = await service.getFirst();
-  res.send(result);
+  // const result = await service.getFirst();
+  // res.send(result);
 });
 
 router.post(

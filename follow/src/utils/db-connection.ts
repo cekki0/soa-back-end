@@ -1,23 +1,12 @@
 import "dotenv/config";
-import pkg from "pg";
-const { Client } = pkg;
-import { drizzle } from "drizzle-orm/node-postgres";
-import * as schema from "../db/schema";
+import neo4j from "neo4j-driver";
 
-const client = new Client({
-  host: "localhost",
-  port: parseInt(process.env.DB_PORT || "5432"),
-  user: process.env.DB_USER || "postgres",
-  password: process.env.DB_PASSWORD || "super",
-  database: process.env.DB_DATABASE || "explorer-v1",
-});
+const driver = neo4j.driver(
+  process.env.NEO4J_DATABASE_URL || "bolt://localhost:7687",
+  neo4j.auth.basic(
+    process.env.NEO4J_DATABASE_USERNAME || "neo4j",
+    process.env.NEO4J_DATABASE_PASSWORD || "12345678"
+  )
+);
 
-await client.connect().then(() => {
-  console.log(
-    `Connected to {${process.env.DB_DATABASE || "explorer-v1"}} database.`
-  );
-});
-
-const db = drizzle(client, { schema });
-
-export default db;
+export default driver;
