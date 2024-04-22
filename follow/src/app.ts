@@ -31,6 +31,11 @@ app.get("/followers/:id", async (req: Request, res: Response) => {
     res.send(result);
 });
 
+app.get("/followers/followings/:id", async (req: Request, res: Response) => {
+  const result = await service.getUsersFollowedByUser(parseInt(req.params.id));
+  res.send(result);
+});
+
 app.get("/", async (req: Request, res: Response) => {
     res.send("ez");
     const userIds = [

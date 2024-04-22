@@ -1,12 +1,17 @@
-﻿using Explorer.BuildingBlocks.Core.UseCases;
+﻿using AutoMapper;
+using Explorer.BuildingBlocks.Core.UseCases;
 using Explorer.Stakeholders.API.Dtos;
 using Explorer.Stakeholders.API.Public;
 using Explorer.Stakeholders.Core.Domain;
+using Explorer.Stakeholders.Core.Domain.RepositoryInterfaces;
 using Explorer.Stakeholders.Core.UseCases;
+using Explorer.Tours.API.Dtos;
 using FluentResults;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 using System.Security.Claims;
+using System.Text.Json;
 
 namespace Explorer.API.Controllers
 {
@@ -34,17 +39,29 @@ namespace Explorer.API.Controllers
             var result = _followerService.GetFollowers(page, pageSize, userId);
             return CreateResponse(result);
         }
+
         [HttpGet("followings/{id:long}")]
-        public ActionResult<PagedResult<FollowingResponseWithUserDto>> GetFollowings([FromQuery] int page, [FromQuery] int pageSize, long id)
+        public async Task<ActionResult<PagedResult<FollowingResponseWithUserDto>>> GetFollowings([FromQuery] int page, [FromQuery] int pageSize, long id)
         {
-            long userId = id;
-            var identity = HttpContext.User.Identity as ClaimsIdentity;
-            if (identity != null && identity.IsAuthenticated)
+            var httpResponse = await httpClient.GetAsync(followerApi + "followings/" + id);
+
+            var responseContent = await httpResponse.Content.ReadAsStringAsync();
+            Trace.WriteLine(responseContent);
+            var response = JsonSerializer.Deserialize<List<JsonElement>>(responseContent);
+            var ids = response.Select(obj => obj.GetProperty("id").GetInt64()).ToList();
+
+            if (httpResponse.IsSuccessStatusCode)
             {
-                userId = long.Parse(identity.FindFirst("id").Value);
+                var result = _followerService.GetUserFollowings(page, pageSize, ids);
+                return CreateResponse(result);
+
             }
-            var result = _followerService.GetFollowings(page, pageSize, userId);
-            return CreateResponse(result);
+            return new ContentResult
+            {
+                StatusCode = (int)httpResponse.StatusCode,
+                Content = await httpResponse.Content.ReadAsStringAsync(),
+                ContentType = "text/plain"
+            };
         }
 
         [HttpDelete("{id:long}")]

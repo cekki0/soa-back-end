@@ -43,7 +43,27 @@ namespace Explorer.Stakeholders.Core.UseCases
             var items = result.Results.Select(_mapper.Map<FollowingResponseWithUserDto>).ToList();
             items.ForEach(x => x.FollowingPerson = _mapper.Map<PersonResponseDto>(_personRepository.GetByUserId(x.Following.Id)));
 
-            return new PagedResult<FollowingResponseWithUserDto>(items, result.TotalCount); ;
+            return new PagedResult<FollowingResponseWithUserDto>(items, result.TotalCount);
+        }
+
+        public Result<PagedResult<FollowingResponseWithUserDto>> GetUserFollowings(int page, int pageSize, List<long> ids)
+        {
+            var result = _followerRepository.GetUserFollowingsPagedById(page, pageSize, ids);
+
+            var items = result.Results.Select(_mapper.Map<PersonResponseDto>).ToList();
+
+            var followerItems = result.Results.Select(personDto =>
+            {
+                var followerDto = new FollowingResponseWithUserDto
+                {
+                    Id = personDto.Id,
+                    Following = _mapper.Map<UserResponseDto>(personDto.User),
+                    FollowingPerson = _mapper.Map<PersonResponseDto>(personDto)
+                };
+                return followerDto;
+            }).ToList();
+
+            return new PagedResult<FollowingResponseWithUserDto>(followerItems, result.TotalCount);
         }
     }
 }

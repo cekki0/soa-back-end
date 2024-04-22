@@ -13,6 +13,8 @@ namespace Explorer.Stakeholders.API.Public
     {
         public Result<PagedResult<FollowerResponseWithUserDto>> GetFollowers(int page, int pageSize, long userId);
         public Result<PagedResult<FollowingResponseWithUserDto>> GetFollowings(int page, int pageSize, long userId);
+        public Result<PagedResult<FollowingResponseWithUserDto>> GetUserFollowings(int page, int pageSize, List<long> ids);
+
         Result Delete(long id);
         Result<FollowerResponseDto> Create<FollowerCreateDto>(FollowerCreateDto rating);
     }
