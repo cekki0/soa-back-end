@@ -21,16 +21,20 @@ export default class FollowService {
         }
     }
 
-    async followUser(userId: number, followUserId: number): Promise<void> {
+    async followUser(
+        userId: number,
+        followUserId: number
+    ): Promise<{ followUserId: number; userId: number }> {
         const session = driver.session();
         try {
-            await session.run(
+            const result = await session.run(
                 `
           MATCH (u:User {id: $userId}), (fu:User {id: $followUserId})
           MERGE (u)-[:FOLLOWS]->(fu)
         `,
                 { userId, followUserId }
             );
+            return { userId, followUserId };
         } catch (error) {
             logger.error("Error following user:", error);
             throw error;
