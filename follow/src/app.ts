@@ -26,37 +26,41 @@ app.listen(port, async () => {
     logger.info(`Example service running on port ${port}`);
 });
 
+app.get("/followers/:id", async (req: Request, res: Response) => {
+    const result = await service.getUserFollowers(parseInt(req.params.id));
+    res.send(result);
+});
+
 app.get("/", async (req: Request, res: Response) => {
     res.send("ez");
-    // await service.createUser({ id: 1 });
-    // await service.createUser({ id: 2 });
-    // await service.createUser({ id: 3 });
-    // await service.createUser({ id: 4 });
+    const userIds = [
+        -170, -172, -171, -168, -169, -3, -178, -174, -176, -177, -8, -175,
+        -184,
+    ];
 
-    // await service.followUser(1, 2);
-    // await service.followUser(1, 3);
-    // await service.followUser(1, 4);
-    // await service.followUser(2, 1);
-    // await service.followUser(3, 1);
-    // await service.followUser(4, 1);
-    // await service.followUser(2, 3);
+    for (const id of userIds) {
+        await service.createUser({ id });
+    }
 
-    // // log svih siminih followera
-    // let simaFollowers = await service.getUserFollowers(1);
-    // console.log("Sima followers:", simaFollowers);
-
-    // // log svih siminih followera nakon sto ga ce unfollow
-    // await service.unfollowUser(2, 1);
-    // simaFollowers = await service.getUserFollowers(1);
-    // console.log("Sima followers after unfollow:", simaFollowers);
-
-    // let followedBySima = await service.getUsersFollowedByUser(1);
-    // console.log("Followed by Sima:", followedBySima);
-
-    // await service.unfollowUser(1, 2);
-    // await service.unfollowUser(1, 3);
-    // followedBySima = await service.getUsersFollowedByUser(1);
-    // console.log("Followed by Sima after unfollowing:", followedBySima);
+    await service.followUser(-172, -169);
+    await service.followUser(-171, -169);
+    await service.followUser(-168, -169);
+    await service.followUser(-169, -168);
+    await service.followUser(-169, -170);
+    await service.followUser(-3, -178);
+    await service.followUser(-3, -174);
+    await service.followUser(-3, -176);
+    await service.followUser(-3, -177);
+    await service.followUser(-3, -8);
+    await service.followUser(-3, -169);
+    await service.followUser(-3, -175);
+    await service.followUser(-3, -184);
+    await service.followUser(-178, -3);
+    await service.followUser(-174, -3);
+    await service.followUser(-176, -3);
+    await service.followUser(-177, -3);
+    await service.followUser(-8, -3);
+    await service.followUser(-169, -3);
 });
 
 const service = new FollowService();
