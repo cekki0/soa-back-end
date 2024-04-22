@@ -36,10 +36,21 @@ app.get("/followers/followings/:id", async (req: Request, res: Response) => {
   res.send(result);
 }
 );
+
 app.post("/followers/follow", async (req: Request, res: Response) => {
     const result = await service.followUser(
         req.body.followedById,
         req.body.userId
+    );
+
+    res.send(result);
+});
+
+app.delete("/followers/unfollow/:userId/:followingId", async (req: Request, res: Response) => {
+    console.log("pusi kurcinu jebem ti mater")
+    const result = await service.unfollowUser(
+        parseInt(req.params.userId),
+        parseInt(req.params.followingId)
     );
 
     res.send(result);

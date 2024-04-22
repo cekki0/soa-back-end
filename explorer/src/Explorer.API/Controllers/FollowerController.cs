@@ -16,7 +16,6 @@ namespace Explorer.API.Controllers
     {
         private readonly IFollowerService _followerService;
         private readonly IUserService _userService;
-        private readonly string followerApi = "http://localhost:8089/followers/";
         public FollowerController(IFollowerService followerService, IUserService userService)
         {
             _followerService = followerService;
@@ -71,11 +70,20 @@ namespace Explorer.API.Controllers
             };
         }
 
-        [HttpDelete("{id:long}")]
-        public ActionResult Delete(long id)
+        [HttpDelete("{userId:long}/{followingId:long}")]
+        public async Task<ActionResult> Delete(long userId, long followingId)
         {
-            var result = _followerService.Delete(id);
-            return CreateResponse(result);
+            var httpResponse = await httpClient.DeleteAsync(followerApi + "unfollow/" + userId + "/" + followingId);
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                return Ok(httpResponse);
+            }
+            return new ContentResult
+            {
+                StatusCode = (int)httpResponse.StatusCode,
+                Content = await httpResponse.Content.ReadAsStringAsync(),
+                ContentType = "text/plain"
+            };
         }
 
         [HttpPost]
