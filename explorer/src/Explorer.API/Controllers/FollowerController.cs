@@ -1,9 +1,6 @@
 ﻿using Explorer.BuildingBlocks.Core.UseCases;
 using Explorer.Stakeholders.API.Dtos;
 using Explorer.Stakeholders.API.Public;
-using Explorer.Stakeholders.Core.Domain;
-using Explorer.Stakeholders.Core.UseCases;
-using FluentResults;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -16,6 +13,7 @@ namespace Explorer.API.Controllers
     {
         private readonly IFollowerService _followerService;
         private readonly IUserService _userService;
+        private readonly string followerApi = "http://localhost:8089/followers/";
         public FollowerController(IFollowerService followerService, IUserService userService)
         {
             _followerService = followerService;
@@ -55,10 +53,21 @@ namespace Explorer.API.Controllers
         }
 
         [HttpPost]
-        public ActionResult<FollowerResponseDto> Create([FromBody] FollowerCreateDto follower)
+        public async Task<ActionResult<FollowerResponseDto>> Create([FromBody] FollowerCreateDto follower)
         {
-            var result = _followerService.Create(follower);
-            return CreateResponse(result);
+            // var result = _followerService.Create(follower);
+            var httpResponse = await httpClient.PostAsJsonAsync(followerApi + "follow", follower);
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                var response = await httpResponse.Content.ReadFromJsonAsync<FollowerResponseDto>();
+                return Ok(response);
+            }
+            return new ContentResult
+            {
+                StatusCode = (int)httpResponse.StatusCode,
+                Content = await httpResponse.Content.ReadAsStringAsync(),
+                ContentType = "text/plain"
+            };
         }
 
         [HttpGet("search/{searchUsername}")]

@@ -8,7 +8,6 @@ namespace Explorer.Stakeholders.API.Dtos
 {
     public class FollowerResponseDto
     {
-        public long Id { get; set; }
         public long UserId { get; set; }
         public long FollowedById { get; set; }
     }

@@ -31,11 +31,20 @@ app.get("/followers/:id", async (req: Request, res: Response) => {
     res.send(result);
 });
 
+app.post("/followers/follow", async (req: Request, res: Response) => {
+    const result = await service.followUser(
+        req.body.followedById,
+        req.body.userId
+    );
+
+    res.send(result);
+});
+
 app.get("/", async (req: Request, res: Response) => {
     res.send("ez");
     const userIds = [
-        -170, -172, -171, -168, -169, -3, -178, -174, -176, -177, -8, -175,
-        -184,
+        -1, -2, -3, -4, -5, -6, -7, -8, -168, -169, -170, -171, -172, -173,
+        -174, -175, -176, -177, -178, -179, -180, -181, -182, -183, -184,
     ];
 
     for (const id of userIds) {
