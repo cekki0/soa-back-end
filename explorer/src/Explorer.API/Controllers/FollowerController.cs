@@ -24,16 +24,27 @@ namespace Explorer.API.Controllers
         }
 
         [HttpGet("followers/{id:long}")]
-        public ActionResult<PagedResult<FollowerResponseWithUserDto>> GetFollowers([FromQuery] int page, [FromQuery] int pageSize, long id)
+        public async Task<ActionResult<PagedResult<FollowerResponseWithUserDto>>> GetFollowers([FromQuery] int page, [FromQuery] int pageSize, long id)
         {
-            long userId = id;
-            var identity = HttpContext.User.Identity as ClaimsIdentity;
-            if (identity != null && identity.IsAuthenticated)
+            var httpResponse = await httpClient.GetAsync(followerApi + id);
+
+            var responseContent = await httpResponse.Content.ReadAsStringAsync();
+            Trace.WriteLine(responseContent);
+            var response = JsonSerializer.Deserialize<List<JsonElement>>(responseContent);
+            var ids = response.Select(obj => obj.GetProperty("id").GetInt64()).ToList();
+
+            if (httpResponse.IsSuccessStatusCode)
             {
-                userId = long.Parse(identity.FindFirst("id").Value);
+                var result = _followerService.GetUserFollowers(page, pageSize, ids);
+                return CreateResponse(result);
+
             }
-            var result = _followerService.GetFollowers(page, pageSize, userId);
-            return CreateResponse(result);
+            return new ContentResult
+            {
+                StatusCode = (int)httpResponse.StatusCode,
+                Content = await httpResponse.Content.ReadAsStringAsync(),
+                ContentType = "text/plain"
+            };
         }
 
         [HttpGet("followings/{id:long}")]
