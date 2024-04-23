@@ -19,6 +19,7 @@ app.use(morgan("tiny"));
 import router from "./routes/example.routes";
 import logger from "./utils/logger";
 import FollowService from "./service/follow.service";
+import { User } from "./model/user.model";
 
 app.use("/example", router);
 
@@ -32,10 +33,11 @@ app.get("/followers/:id", async (req: Request, res: Response) => {
 });
 
 app.get("/followers/followings/:id", async (req: Request, res: Response) => {
-  const result = await service.getUsersFollowedByUser(parseInt(req.params.id));
-  res.send(result);
-}
-);
+    const result = await service.getUsersFollowedByUser(
+        parseInt(req.params.id)
+    );
+    res.send(result);
+});
 
 app.post("/followers/follow", async (req: Request, res: Response) => {
     const result = await service.followUser(
@@ -46,15 +48,27 @@ app.post("/followers/follow", async (req: Request, res: Response) => {
     res.send(result);
 });
 
-app.delete("/followers/unfollow/:userId/:followingId", async (req: Request, res: Response) => {
-    console.log("pusi kurcinu jebem ti mater")
-    const result = await service.unfollowUser(
-        parseInt(req.params.userId),
-        parseInt(req.params.followingId)
-    );
+app.delete(
+    "/followers/unfollow/:userId/:followingId",
+    async (req: Request, res: Response) => {
+        const result = await service.unfollowUser(
+            parseInt(req.params.userId),
+            parseInt(req.params.followingId)
+        );
 
-    res.send(result);
-});
+        res.send(result);
+    }
+);
+
+app.get(
+    "/followers/recommendations/:id",
+    async (req: Request, res: Response) => {
+        const result = await service.getFollowingRecommendations(
+            parseInt(req.params.id)
+        );
+        res.send(result);
+    }
+);
 
 app.get("/", async (req: Request, res: Response) => {
     res.send("ez");
@@ -86,6 +100,8 @@ app.get("/", async (req: Request, res: Response) => {
     await service.followUser(-177, -3);
     await service.followUser(-8, -3);
     await service.followUser(-169, -3);
+    await service.followUser(-4, -7);
+    await service.followUser(-3, -4);
 });
 
 const service = new FollowService();

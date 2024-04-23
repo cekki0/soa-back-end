@@ -118,4 +118,35 @@ export default class FollowService {
 
         return following;
     }
+
+    async getFollowingRecommendations(userId: number): Promise<User[]> {
+        const session = driver.session();
+        let recommendations: User[] = [];
+        try {
+            const result = await session.run(
+                `
+                MATCH (u:User {id: $userId})-[:FOLLOWS]->(:User)-[:FOLLOWS]->(recommended:User)
+                WHERE NOT (u)-[:FOLLOWS]->(recommended) AND u <> recommended
+                RETURN recommended
+                `,
+                { userId }
+            );
+
+            recommendations = result.records.map((record) => {
+                const recommendedUser = record.get("recommended");
+                return {
+                    id: recommendedUser.properties.id,
+                    // Add other properties of the user if needed
+                };
+            });
+        } catch (error) {
+            // Handle error
+            console.error("Error getting following recommendations:", error);
+            throw error;
+        } finally {
+            await session.close();
+        }
+
+        return recommendations;
+    }
 }
