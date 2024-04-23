@@ -52,6 +52,35 @@ services:
     depends_on:
       - postgres
 
+  follow:
+    build: ./follow
+    environment:
+      - PORT=8089
+      - NEO4J_DATABASE_PASSWORD=12345678
+      - NEO4J_DATABASE_USERNAME=neo4j
+      - NEO4J_DATABASE_URL=bolt://neo4j:7687
+    volumes:
+      - ./follow:/home/node/app
+    depends_on:
+      - neo4j
+
+  neo4j:
+    container_name: neo4j
+    image: neo4j:latest
+    ports:
+      - 7474:7474
+      - 7687:7687
+    environment:
+      - NEO4J_AUTH=neo4j/12345678
+      - NEO4J_apoc_export_file_enabled=true
+      - NEO4J_apoc_import_file_enabled=true
+      - NEO4J_apoc_import_file_use__neo4j__config=true
+    volumes:
+      - ./neo4j_db/data:/data
+      - ./neo4j_db/logs:/logs
+      - ./neo4j_db/import:/var/lib/neo4j/import
+      - ./neo4j_db/plugins:/plugins
+
   tour:
     build: ./tour
     environment:
