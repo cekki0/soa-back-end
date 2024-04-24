@@ -35,6 +35,8 @@ services:
       ENCOUNTER_PORT: 8089
       TOUR_HOST: tour
       TOUR_PORT: 8080
+      FOLLOW_HOST: follow
+      FOLLOW_PORT: 8089
     depends_on:
       - postgres
 
@@ -63,6 +65,8 @@ services:
       - ./follow:/home/node/app
     depends_on:
       - neo4j
+    ports:
+      - 8089:8089
 
   neo4j:
     container_name: neo4j
@@ -76,10 +80,7 @@ services:
       - NEO4J_apoc_import_file_enabled=true
       - NEO4J_apoc_import_file_use__neo4j__config=true
     volumes:
-      - ./neo4j_db/data:/data
-      - ./neo4j_db/logs:/logs
-      - ./neo4j_db/import:/var/lib/neo4j/import
-      - ./neo4j_db/plugins:/plugins
+      - neo4j_db:/data
 
   tour:
     build: ./tour
@@ -94,4 +95,6 @@ services:
 
 volumes:
   explorer_data:
+    driver: local
+  neo4j_db:
     driver: local
