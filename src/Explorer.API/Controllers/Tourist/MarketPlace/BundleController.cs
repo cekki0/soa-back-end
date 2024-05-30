@@ -13,10 +13,13 @@ namespace Explorer.API.Controllers.Tourist.MarketPlace
     {
         private readonly IBundleService _bundleService;
 
-        public BundleController(IBundleService bundleService)
+        public BundleController(
+            IBundleService bundleService,
+            ILogger<BundleController> logger) : base(logger)
         {
             _bundleService = bundleService;
         }
+
 
         [HttpGet]
         public ActionResult<PagedResult<BundleResponseDto>> GetPublished()

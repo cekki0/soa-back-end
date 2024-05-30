@@ -17,10 +17,13 @@ namespace Explorer.API.Controllers.Tourist
     public class TourRecommendersController : BaseApiController
     {
         private readonly IToursRecommendersService _tourRecommendersService;
-        public TourRecommendersController(IToursRecommendersService tourRecommendersService)
+        public TourRecommendersController(
+            IToursRecommendersService tourRecommendersService,
+            ILogger<TourRecommendersController> logger) : base(logger)
         {
             _tourRecommendersService = tourRecommendersService;
         }
+
         [Route("activetours")]
         [HttpGet]
         public ActionResult<PagedResult<TourResponseDto>> getActiveTours()

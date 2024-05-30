@@ -12,10 +12,13 @@ namespace Explorer.API.Controllers.Author
     {
         private readonly IProblemService _problemService;
 
-        public ProblemController(IProblemService problemService)
+        public ProblemController(
+            IProblemService problemService,
+            ILogger<ProblemController> logger) : base(logger)
         {
             _problemService = problemService;
         }
+
 
         [HttpGet]
         public ActionResult<PagedResult<ProblemResponseDto>> GetByAuthor([FromQuery] int page, [FromQuery] int pageSize)

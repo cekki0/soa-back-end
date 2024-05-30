@@ -10,10 +10,13 @@ namespace Explorer.API.Controllers
     public class ProblemResolvingNotificationController : BaseApiController
     {
         private readonly IProblemResolvingNotificationService _notificationService;
-        public ProblemResolvingNotificationController(IProblemResolvingNotificationService problemResolvingNotificationService)
+        public ProblemResolvingNotificationController(
+            IProblemResolvingNotificationService problemResolvingNotificationService,
+            ILogger<ProblemResolvingNotificationController> logger) : base(logger)
         {
             _notificationService = problemResolvingNotificationService;
         }
+
 
         [HttpGet]
         public ActionResult<ProblemResolvingNotificationResponseDto> GetByLoggedInUser(int page, int pageSize)

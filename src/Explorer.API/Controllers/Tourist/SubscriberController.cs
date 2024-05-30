@@ -15,10 +15,13 @@ namespace Explorer.API.Controllers.Tourist
     public class SubscriberController : BaseApiController
     {
         private readonly ISubscriberService _subscriberService;
-        public SubscriberController(ISubscriberService subscriberService)
+        public SubscriberController(
+            ISubscriberService subscriberService,
+            ILogger<SubscriberController> logger) : base(logger)
         {
             _subscriberService = subscriberService;
         }
+
 
         [HttpPost]
         public ActionResult<SubscriberResponseDto> SaveCampaign(SubscriberCreateDto createDto)

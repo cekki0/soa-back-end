@@ -13,10 +13,13 @@ public class ClubMemberManagementController : BaseApiController
 {
     private readonly IClubMemberManagementService _clubMemberManagementService;
 
-    public ClubMemberManagementController(IClubMemberManagementService clubMemberManagementService)
+    public ClubMemberManagementController(
+        IClubMemberManagementService clubMemberManagementService,
+        ILogger<ClubMemberManagementController> logger) : base(logger)
     {
         _clubMemberManagementService = clubMemberManagementService;
     }
+
 
     [HttpDelete("kick/{membershipId:int}")]
     public ActionResult KickTourist(int membershipId)

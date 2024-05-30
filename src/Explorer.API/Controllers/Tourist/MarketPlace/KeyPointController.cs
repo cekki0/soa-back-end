@@ -11,10 +11,13 @@ namespace Explorer.API.Controllers.Tourist.MarketPlace
     {
         private readonly IKeyPointService _keyPointService;
 
-        public KeyPointController(IKeyPointService keyPointService)
+        public KeyPointController(
+            IKeyPointService keyPointService,
+            ILogger<KeyPointController> logger) : base(logger)
         {
             _keyPointService = keyPointService;
         }
+
 
         [Authorize(Roles = "author, tourist")]
         [HttpGet("tours/{tourId:long}/key-points")]

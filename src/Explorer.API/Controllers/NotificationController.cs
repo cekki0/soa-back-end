@@ -12,7 +12,7 @@ public class NotificationController : BaseApiController
     private readonly IProblemResolvingNotificationService notificationService;
     private readonly IShoppingNotificationService shoppingNotificationService;
 
-    public NotificationController(IProblemResolvingNotificationService notificationService, IShoppingNotificationService shoppingNotificationService)
+    public NotificationController(ILogger<NotificationController> logger, IProblemResolvingNotificationService notificationService, IShoppingNotificationService shoppingNotificationService):base(logger)
     {
         this.notificationService = notificationService;
         this.shoppingNotificationService = shoppingNotificationService;

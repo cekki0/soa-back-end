@@ -16,10 +16,13 @@ namespace Explorer.API.Controllers.Tourist
     public class CampaignController : BaseApiController
     {
         private readonly ICampaignService _campaignService;
-        public CampaignController(ICampaignService campaignService)
+        public CampaignController(
+            ICampaignService campaignService,
+            ILogger<CampaignController> logger) : base(logger)
         {
             _campaignService = campaignService;
         }
+
         [HttpPost]
         public ActionResult<CampaignResponseDto> SaveCampaign(CampaignCreateDto createDto)
         {

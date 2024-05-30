@@ -16,11 +16,15 @@ namespace Explorer.API.Controllers.Tourist
     {
         private readonly ITouristEquipmentService _touristEquipmentService;
         private readonly IEquipmentService _equipmentService;
-        public TouristEquipmentController(ITouristEquipmentService touristEquipmentService, IEquipmentService equipmentService)
+        public TouristEquipmentController(
+            ITouristEquipmentService touristEquipmentService,
+            IEquipmentService equipmentService,
+            ILogger<TouristEquipmentController> logger) : base(logger)
         {
             _touristEquipmentService = touristEquipmentService;
             _equipmentService = equipmentService;
         }
+
 
         [HttpGet("/api/tourist/only_equipment")]
         public ActionResult<PagedResult<EquipmentResponseDto>> GetAllEquipment([FromQuery] int page, [FromQuery] int pageSize)

@@ -12,10 +12,13 @@ public class TourSaleController : BaseApiController
 {
     private readonly ITourSaleService _saleService;
 
-    public TourSaleController(ITourSaleService saleService)
+    public TourSaleController(
+        ITourSaleService saleService,
+        ILogger<TourSaleController> logger) : base(logger)
     {
         _saleService = saleService;
     }
+
 
     [Authorize(Policy = "authorPolicy")]
     [HttpPost]

@@ -12,11 +12,15 @@ namespace Explorer.API.Controllers.Tourist
     {
         private readonly IEncounterService _encounterService;
         private readonly ITouristProgressService _touristProgressService;
-        public MiscEncounterController(IEncounterService encounterService, ITouristProgressService touristProgressService)
+        public MiscEncounterController(
+            IEncounterService encounterService,
+            ITouristProgressService touristProgressService,
+            ILogger<MiscEncounterController> logger) : base(logger)
         {
             _encounterService = encounterService;
             _touristProgressService = touristProgressService;
         }
+
 
 
         [HttpPost("createMisc")]

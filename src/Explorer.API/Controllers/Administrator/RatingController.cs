@@ -11,7 +11,7 @@ namespace Explorer.API.Controllers.Administrator
     public class RatingController : BaseApiController
     {
         private readonly IRatingService _ratingService;
-        public RatingController(IRatingService ratingService)
+        public RatingController(ILogger<RatingController> logger,IRatingService ratingService):base(logger)
         {
             _ratingService = ratingService;
         }

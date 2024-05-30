@@ -13,7 +13,7 @@ namespace Explorer.API.Controllers.Author.TourAuthoring
         private readonly Explorer.Payments.API.Public.ITourStatisticsService _tourPurchasingStatisticsService;
         private readonly Explorer.Encounters.API.Public.ITourStatisticsService _tourEncounterStatisticsService;
 
-        public TourStatisticsController(ITourStatisticsService tourExecutionStatisticsService, Explorer.Payments.API.Public.ITourStatisticsService tourPurchasingStatisticsService, Encounters.API.Public.ITourStatisticsService tourEncounterStatisticsService)
+        public TourStatisticsController(ILogger<TourStatisticsController> logger, ITourStatisticsService tourExecutionStatisticsService, Explorer.Payments.API.Public.ITourStatisticsService tourPurchasingStatisticsService, Encounters.API.Public.ITourStatisticsService tourEncounterStatisticsService):base(logger)
         {
             _tourExecutionStatisticsService = tourExecutionStatisticsService;
             _tourPurchasingStatisticsService = tourPurchasingStatisticsService;

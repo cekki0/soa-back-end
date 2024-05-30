@@ -13,7 +13,9 @@ namespace Explorer.API.Controllers.Tourist
     {
         private readonly ITourTokenService _tokenService;
 
-        public TourTokenController(ITourTokenService tokenService)
+        public TourTokenController(
+            ITourTokenService tokenService,
+            ILogger<TourTokenController> logger) : base(logger)
         {
             _tokenService = tokenService;
         }

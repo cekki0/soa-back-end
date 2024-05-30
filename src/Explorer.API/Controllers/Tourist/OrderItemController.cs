@@ -13,10 +13,13 @@ namespace Explorer.API.Controllers.Tourist
     {
         private readonly IOrderItemService _orderService;
 
-        public OrderItemController(IOrderItemService orderService)
+        public OrderItemController(
+            IOrderItemService orderService,
+            ILogger<OrderItemController> logger) : base(logger)
         {
             _orderService = orderService;
         }
+
 
         [HttpGet]
         public ActionResult<PagedResult<OrderItemResponseDto>> GetAll([FromQuery] int page, [FromQuery] int pageSize)

@@ -11,10 +11,13 @@ namespace Explorer.API.Controllers.Tourist
     public class RatingController : BaseApiController
     {
         private readonly IRatingService _ratingService;
-        public RatingController(IRatingService ratingService)
+        public RatingController(
+            IRatingService ratingService,
+            ILogger<RatingController> logger) : base(logger)
         {
             _ratingService = ratingService;
         }
+
 
         [HttpPost]
         public ActionResult<RatingResponseDto> Create([FromBody] RatingCreateDto rating)

@@ -15,10 +15,13 @@ namespace Explorer.API.Controllers.Author
     {
         private readonly IPublicKeyPointRequestService _requestService;
 
-        public PublicKeyPointRequestController(IPublicKeyPointRequestService requestService)
+        public PublicKeyPointRequestController(
+            IPublicKeyPointRequestService requestService,
+            ILogger<PublicKeyPointRequestController> logger) : base(logger)
         {
             _requestService = requestService;
         }
+
         [HttpPost]
         public ActionResult<PublicKeyPointRequestResponseDto> Create([FromBody] PublicKeyPointRequestCreateDto request)
         {

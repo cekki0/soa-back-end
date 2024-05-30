@@ -16,10 +16,13 @@ namespace Explorer.API.Controllers.Tourist
     {
         private readonly IBundleRecordService _bundleRecordService;
 
-        public BundleRecordController(IBundleRecordService bundleRecordService)
+        public BundleRecordController(
+            IBundleRecordService bundleRecordService,
+            ILogger<BundleRecordController> logger) : base(logger)
         {
             _bundleRecordService = bundleRecordService;
         }
+
 
         [HttpGet]
         public ActionResult<List<BundleRecordResponseDto>> GetByTourist()

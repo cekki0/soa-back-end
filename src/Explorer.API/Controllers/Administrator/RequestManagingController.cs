@@ -13,7 +13,7 @@ namespace Explorer.API.Controllers.Administrator
     {
         private readonly IPublicKeyPointRequestService _publicKeyPointRequestService;
         private readonly IPublicFacilityRequestService _publicFacilityRequestService;
-        public RequestManagingController(IPublicKeyPointRequestService publicKeyPointRequestService, IPublicFacilityRequestService publicFacilityRequestService)
+        public RequestManagingController(ILogger<RequestManagingController> logger, IPublicKeyPointRequestService publicKeyPointRequestService, IPublicFacilityRequestService publicFacilityRequestService):base(logger)
         {
             _publicKeyPointRequestService = publicKeyPointRequestService;
             _publicFacilityRequestService = publicFacilityRequestService;

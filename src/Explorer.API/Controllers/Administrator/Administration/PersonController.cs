@@ -12,7 +12,7 @@ namespace Explorer.API.Controllers.Administrator.Administration
     {
         private readonly IPersonService _personService;
 
-        public PersonController(IPersonService personService)
+        public PersonController(ILogger<PersonController> logger, IPersonService personService):base(logger)
         {
             _personService = personService;
         }

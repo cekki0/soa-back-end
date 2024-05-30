@@ -14,11 +14,15 @@ namespace Explorer.API.Controllers.Tourist.MarketPlace
         private readonly ITourService _tourService;
         private readonly IShoppingCartService _shoppingCartService;
 
-        public TourController(ITourService service, IShoppingCartService shoppingCartService)
+        public TourController(
+            ITourService service,
+            IShoppingCartService shoppingCartService,
+            ILogger<TourController> logger) : base(logger)
         {
             _tourService = service;
             _shoppingCartService = shoppingCartService;
         }
+
 
         [Authorize(Roles = "author, tourist")]
         [HttpGet("tours/published")]

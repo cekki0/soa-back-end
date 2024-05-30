@@ -11,10 +11,13 @@ public class TouristPositionController : BaseApiController
 {
     private readonly ITouristPositionService _touristPositionService;
 
-    public TouristPositionController(ITouristPositionService touristPositionService)
+    public TouristPositionController(
+        ITouristPositionService touristPositionService,
+        ILogger<TouristPositionController> logger) : base(logger)
     {
         _touristPositionService = touristPositionService;
     }
+
 
     [HttpPost("position")]
     public ActionResult<TouristPositionResponseDto> Create([FromBody] TouristPositionCreateDto touristPosition)

@@ -10,10 +10,13 @@ namespace Explorer.API.Controllers.Author
     public class SocialEncounterController : BaseApiController
     {
         private readonly IEncounterService _encounterService;
-        public SocialEncounterController(IEncounterService encounterService)
+        public SocialEncounterController(
+            IEncounterService encounterService,
+            ILogger<SocialEncounterController> logger) : base(logger)
         {
             _encounterService = encounterService;
         }
+
 
         [HttpPost("create")]
         public ActionResult<EncounterResponseDto> Create([FromBody] SocialEncounterCreateDto encounter)

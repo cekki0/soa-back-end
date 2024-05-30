@@ -10,7 +10,7 @@ namespace Explorer.API.Controllers.Administrator.Administration
     {
         private readonly ITourService _tourService;
 
-        public TourController(ITourService tourService)
+        public TourController(ILogger<TourController> logger,ITourService tourService):base(logger)
         {
             _tourService = tourService;
         }

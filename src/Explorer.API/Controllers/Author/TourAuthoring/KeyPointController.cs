@@ -12,10 +12,13 @@ public class KeyPointController : BaseApiController
 {
     private readonly IKeyPointService _keyPointService;
 
-    public KeyPointController(IKeyPointService keyPointService)
+    public KeyPointController(
+        IKeyPointService keyPointService,
+        ILogger<KeyPointController> logger) : base(logger)
     {
         _keyPointService = keyPointService;
     }
+
 
     [Authorize(Roles = "author")]
     [HttpPost("tours/{tourId:long}/key-points")]

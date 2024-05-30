@@ -13,7 +13,11 @@ namespace Explorer.API.Controllers.Tourist
     {
         private readonly IWalletService _walletService;
         private readonly ITransactionRecordService _transactionRecordService;
-        public WalletController(IWalletService walletService, ITransactionRecordService transactionRecordService)
+        public WalletController(
+            ILogger<WalletController> logger,
+            IWalletService walletService,
+            ITransactionRecordService transactionRecordService)
+            : base(logger)
         {
             _walletService = walletService;
             _transactionRecordService = transactionRecordService;

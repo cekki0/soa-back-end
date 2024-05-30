@@ -14,10 +14,13 @@ namespace Explorer.API.Controllers.Tourist
     {
         private readonly IReviewService _reviewService;
 
-        public ReviewController(IReviewService reviewService)
+        public ReviewController(
+            IReviewService reviewService,
+            ILogger<ReviewController> logger) : base(logger)
         {
             _reviewService = reviewService;
         }
+
 
         //[Authorize(Policy = "nonAdministratorPolicy")]
         [HttpGet("{tourId:int}")]

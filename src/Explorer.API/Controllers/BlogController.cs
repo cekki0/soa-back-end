@@ -17,12 +17,17 @@ namespace Explorer.API.Controllers
         private readonly IClubMemberManagementService _clubMemberManagmentService;
         private readonly IClubService _clubService;
 
-        public BlogController(IBlogService authenticationService, IClubMemberManagementService clubMemberManagmentService, IClubService clubService)
+        public BlogController(
+            IBlogService authenticationService,
+            IClubMemberManagementService clubMemberManagmentService,
+            IClubService clubService,
+            ILogger<BlogController> logger) : base(logger)
         {
             _blogService = authenticationService;
             _clubMemberManagmentService = clubMemberManagmentService;
             _clubService = clubService;
         }
+
 
 
         [Authorize(Policy = "userPolicy")]

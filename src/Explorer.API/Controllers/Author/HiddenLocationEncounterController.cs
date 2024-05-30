@@ -10,10 +10,13 @@ namespace Explorer.API.Controllers.Author
     public class HiddenLocationEncounterController : BaseApiController
     {
         private readonly IEncounterService _encounterService;
-        public HiddenLocationEncounterController(IEncounterService encounterService)
+        public HiddenLocationEncounterController(
+            IEncounterService encounterService,
+            ILogger<HiddenLocationEncounterController> logger) : base(logger)
         {
             _encounterService = encounterService;
         }
+
 
         [HttpPost("create")]
         public ActionResult<HiddenLocationEncounterResponseDto> Create([FromBody] HiddenLocationEncounterCreateDto encounter)

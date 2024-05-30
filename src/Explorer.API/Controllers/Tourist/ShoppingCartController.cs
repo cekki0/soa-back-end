@@ -15,10 +15,13 @@ namespace Explorer.API.Controllers.Tourist
     {
         private readonly IShoppingCartService _cartService;
 
-        public ShoppingCartController(IShoppingCartService cartService)
+        public ShoppingCartController(
+            IShoppingCartService cartService,
+            ILogger<ShoppingCartController> logger) : base(logger)
         {
             _cartService = cartService;
         }
+
 
         [HttpGet("{id:long}")]
         public ActionResult<ShoppingCartResponseDto> GetByTouristId(long id)

@@ -14,11 +14,15 @@ namespace Explorer.API.Controllers.Tourist
     {
         private readonly IRecordService _recordService;
         private readonly ITransactionRecordService _transactionRecordService;
-        public PaymentRecordController(IRecordService recordService, ITransactionRecordService transactionRecordService)
+        public PaymentRecordController(
+            IRecordService recordService,
+            ITransactionRecordService transactionRecordService,
+            ILogger<PaymentRecordController> logger) : base(logger)
         {
             _recordService = recordService;
             _transactionRecordService = transactionRecordService;
         }
+
 
         [HttpGet]
         public ActionResult<PagedResult<RecordResponseDto>> GetPagedByTouristId([FromQuery] int page, [FromQuery] int pageSize)

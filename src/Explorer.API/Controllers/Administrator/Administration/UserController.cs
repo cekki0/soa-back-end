@@ -14,7 +14,7 @@ namespace Explorer.API.Controllers.Administrator.Administration
         private readonly IUserService _userService;
         private readonly IWalletService _walletService;
 
-        public UserController(IUserService userService, IWalletService walletService)
+        public UserController(ILogger<UserController> logger,IUserService userService, IWalletService walletService): base(logger)
         {
             _userService = userService;
             _walletService = walletService;

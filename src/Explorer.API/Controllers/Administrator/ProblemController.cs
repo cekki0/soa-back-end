@@ -10,7 +10,7 @@ namespace Explorer.API.Controllers.Administrator
     public class ProblemController : BaseApiController
     {
         private readonly IProblemService _problemService;
-        public ProblemController(IProblemService problemService)
+        public ProblemController(ILogger<ProblemController> logger, IProblemService problemService):base(logger)
         {
             _problemService = problemService;
         }

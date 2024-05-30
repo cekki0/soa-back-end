@@ -13,10 +13,13 @@ namespace Explorer.API.Controllers.Tourist
     {
         private readonly IClubJoinRequestService _requestService;
 
-        public ClubJoinRequestController(IClubJoinRequestService requestService)
+        public ClubJoinRequestController(
+            IClubJoinRequestService requestService,
+            ILogger<ClubJoinRequestController> logger) : base(logger)
         {
             _requestService = requestService;
         }
+
 
         [HttpPost]
         public ActionResult<ClubJoinRequestCreatedDto> Send([FromBody] ClubJoinRequestSendDto request)

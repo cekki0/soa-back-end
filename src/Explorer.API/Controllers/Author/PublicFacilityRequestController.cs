@@ -14,10 +14,13 @@ namespace Explorer.API.Controllers.Author
     {
         private readonly IPublicFacilityRequestService _requestService;
 
-        public PublicFacilityRequestController(IPublicFacilityRequestService requestService)
+        public PublicFacilityRequestController(
+            IPublicFacilityRequestService requestService,
+            ILogger<PublicFacilityRequestController> logger) : base(logger)
         {
             _requestService = requestService;
         }
+
         [HttpPost]
         public ActionResult<PublicFacilityRequestResponseDto> Create([FromBody] PublicFacilityRequestCreateDto request)
         {

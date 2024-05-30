@@ -16,7 +16,11 @@ namespace Explorer.API.Controllers.Tourist
         private readonly IWishlistService _wishlistService;
         private readonly ITourService _tourService;
 
-        public WishlistController(IWishlistService wishlistService, ITourService tourService)
+        public WishlistController(
+            ILogger<WishlistController> logger,
+            IWishlistService wishlistService,
+            ITourService tourService)
+            : base(logger)
         {
             _wishlistService = wishlistService;
             _tourService = tourService;

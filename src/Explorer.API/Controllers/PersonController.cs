@@ -12,10 +12,13 @@ public class PersonController : BaseApiController
 {
     private readonly IPersonService _personService;
 
-    public PersonController(IPersonService personService)
+    public PersonController(
+        IPersonService personService,
+        ILogger<PersonController> logger) : base(logger)
     {
         _personService = personService;
     }
+
 
     [HttpPut("update/{personId:long}")]
     public ActionResult<PersonResponseDto> Update([FromBody] PersonUpdateDto person, long personId)

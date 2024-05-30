@@ -13,10 +13,13 @@ namespace Explorer.API.Controllers.Author
     {
         private readonly IFacilityService _facilityService;
 
-        public FacilityController(IFacilityService facilityService)
+        public FacilityController(
+            IFacilityService facilityService,
+            ILogger<FacilityController> logger) : base(logger)
         {
             _facilityService = facilityService;
         }
+
 
         [HttpGet]
         public ActionResult<PagedResult<FacilityResponseDto>> GetAll([FromQuery] int page, [FromQuery] int pageSize)

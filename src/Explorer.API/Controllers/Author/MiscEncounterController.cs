@@ -10,9 +10,13 @@ namespace Explorer.API.Controllers.Author
     public class MiscEncounterController : BaseApiController
     {
         private readonly IEncounterService _encounterService;
-        public MiscEncounterController(IEncounterService encounterService) {
+        public MiscEncounterController(
+            IEncounterService encounterService,
+            ILogger<MiscEncounterController> logger) : base(logger)
+        {
             _encounterService = encounterService;
         }
+
 
 
         [HttpPost("createMisc")]

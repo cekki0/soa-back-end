@@ -15,11 +15,15 @@ namespace Explorer.API.Controllers.Tourist
         private readonly IClubService _clubService;
         private readonly IClubMemberManagementService _clubMemberManagementService;
 
-        public ClubController(IClubService clubService, IClubMemberManagementService clubMemberManagementService)
+        public ClubController(
+            IClubService clubService,
+            IClubMemberManagementService clubMemberManagementService,
+            ILogger<ClubController> logger) : base(logger)
         {
             _clubService = clubService;
             _clubMemberManagementService = clubMemberManagementService;
         }
+
 
         [HttpGet]
         public ActionResult<PagedResult<ClubResponseWithOwnerDto>> GetAll([FromQuery] int page, [FromQuery] int pageSize)

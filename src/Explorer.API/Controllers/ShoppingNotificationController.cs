@@ -15,10 +15,13 @@ namespace Explorer.API.Controllers
     {
         private readonly IShoppingNotificationService _notificationService;
 
-        public ShoppingNotificationController(IShoppingNotificationService notificationService)
+        public ShoppingNotificationController(
+            IShoppingNotificationService notificationService,
+            ILogger<ShoppingNotificationController> logger) : base(logger)
         {
             _notificationService = notificationService;
         }
+
         [HttpGet]
         public ActionResult<ShoppingNotificationResponseDto> GetNotificationsByTouristId([FromQuery] int page, [FromQuery] int pageSize)
         {

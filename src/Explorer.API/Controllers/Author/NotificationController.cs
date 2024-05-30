@@ -15,10 +15,13 @@ namespace Explorer.API.Controllers.Author
     {
         private readonly INotificationService _notificationService;
 
-        public NotificationController(INotificationService notificationService)
+        public NotificationController(
+            INotificationService notificationService,
+            ILogger<NotificationController> logger) : base(logger)
         {
             _notificationService = notificationService;
         }
+
         [HttpGet]
         public ActionResult<PublicFacilityNotificationResponseDto> GetFacilityNotificationsByAuthorId([FromQuery] int page, [FromQuery] int pageSize)
         {

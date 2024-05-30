@@ -12,7 +12,10 @@ namespace Explorer.API.Controllers.Author
     {
         private readonly IEquipmentService _equipmentService;
 
-        public EquipmentController(IEquipmentService equipmentService)
+        public EquipmentController(
+            ILogger<EquipmentController> logger,
+            IEquipmentService equipmentService)
+            : base(logger)
         {
             _equipmentService = equipmentService;
         }

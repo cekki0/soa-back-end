@@ -14,7 +14,11 @@ namespace Explorer.API.Controllers
         private readonly ITourSearchService _tourSearchService;
         private readonly ITourSaleService? _tourSaleService;
 
-        public TourSearchController(ITourSearchService tourSearchService, ITourSaleService? tourSaleService)
+        public TourSearchController(
+            ILogger<TourSearchController> logger,
+            ITourSearchService tourSearchService,
+            ITourSaleService? tourSaleService)
+            : base(logger)
         {
             _tourSearchService = tourSearchService;
             _tourSaleService = tourSaleService;

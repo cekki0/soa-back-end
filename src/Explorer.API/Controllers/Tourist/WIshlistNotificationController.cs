@@ -12,10 +12,13 @@ namespace Explorer.API.Controllers.Tourist
     {
         private readonly IWishlistNotificationService _wishlistNotificationService;
 
-        public WIshlistNotificationController(IWishlistNotificationService wishlistNotificationService)
+        public WIshlistNotificationController(
+            IWishlistNotificationService wishlistNotificationService,
+            ILogger<WIshlistNotificationController> logger) : base(logger)
         {
             _wishlistNotificationService = wishlistNotificationService;
         }
+
 
         [HttpGet]
         public ActionResult<List<WishlistNotificationResponseDto>> GetByTouristId()

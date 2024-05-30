@@ -13,11 +13,15 @@ namespace Explorer.API.Controllers.Tourist
         private readonly ICommentService _commentService;
         private readonly IBlogService _blogService;
 
-        public CommentController(ICommentService commentService, IBlogService blogService)
+        public CommentController(
+            ICommentService commentService,
+            IBlogService blogService,
+            ILogger<CommentController> logger) : base(logger)
         {
             _commentService = commentService;
             _blogService = blogService;
         }
+
 
         [Authorize(Policy = "userPolicy")]
         [HttpPost]

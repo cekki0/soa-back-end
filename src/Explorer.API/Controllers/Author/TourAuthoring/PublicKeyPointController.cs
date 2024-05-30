@@ -10,10 +10,13 @@ public class PublicKeyPointController : BaseApiController
 {
     private readonly IPublicKeyPointService _publicKeyPointService;
 
-    public PublicKeyPointController(IPublicKeyPointService publicKeyPointService)
+    public PublicKeyPointController(
+        IPublicKeyPointService publicKeyPointService,
+        ILogger<PublicKeyPointController> logger) : base(logger)
     {
         _publicKeyPointService = publicKeyPointService;
     }
+
 
     [Authorize(Roles = "author, tourist")]
     [HttpGet]

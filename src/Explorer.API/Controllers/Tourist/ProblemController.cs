@@ -14,10 +14,13 @@ namespace Explorer.API.Controllers.Tourist
     {
         private readonly IProblemService _problemService;
 
-        public ProblemController(IProblemService problemService)
+        public ProblemController(
+            IProblemService problemService,
+            ILogger<ProblemController> logger) : base(logger)
         {
             _problemService = problemService;
         }
+
 
         [HttpGet("all")]
         public ActionResult<PagedResult<ProblemResponseDto>> GetAll([FromQuery] int page, [FromQuery] int pageSize)

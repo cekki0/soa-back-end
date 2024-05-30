@@ -13,7 +13,7 @@ namespace Explorer.API.Controllers.Author.TourAuthoring
     {
         private readonly ITourService _tourService;
 
-        public TourController(ITourService tourService)
+        public TourController(ILogger<EquipmentController> logger,ITourService tourService):base(logger)
         {
             _tourService = tourService;
         }

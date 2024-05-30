@@ -12,11 +12,15 @@ namespace Explorer.API.Controllers.Tourist
     {
         private readonly IEncounterService _encounterService;
         private readonly ITouristProgressService _touristProgressService;
-        public SocialEncounterController(IEncounterService encounterService, ITouristProgressService touristProgressService)
+        public SocialEncounterController(
+            IEncounterService encounterService,
+            ITouristProgressService touristProgressService,
+            ILogger<SocialEncounterController> logger) : base(logger)
         {
             _encounterService = encounterService;
             _touristProgressService = touristProgressService;
         }
+
 
         [HttpPost("create")]
         public ActionResult<EncounterResponseDto> Create([FromBody] SocialEncounterCreateDto encounter)

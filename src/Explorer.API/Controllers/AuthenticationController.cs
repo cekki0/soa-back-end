@@ -17,7 +17,10 @@ public class AuthenticationController : BaseApiController
     private readonly IAuthenticationService _authenticationService;
     private readonly IWalletService _walletService;
 
-    public AuthenticationController(IAuthenticationService authenticationService, IWalletService walletService)
+    public AuthenticationController(
+        ILogger<AuthenticationController> logger,
+        IAuthenticationService authenticationService,
+        IWalletService walletService) : base(logger)
     {
         _authenticationService = authenticationService;
         _walletService = walletService;

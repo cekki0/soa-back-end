@@ -21,12 +21,17 @@ namespace Explorer.API.Controllers.Tourist
         private readonly ITourService _tourService;
         private readonly ITourTokenService _tourTokenService;
 
-        public TourExecutionSessionController(ITourExecutionSessionService tourExecutionService, ITourService tourService, ITourTokenService tourTokenService)
+        public TourExecutionSessionController(
+            ITourExecutionSessionService tourExecutionService,
+            ITourService tourService,
+            ITourTokenService tourTokenService,
+            ILogger<TourExecutionSessionController> logger) : base(logger)
         {
             _tourExecutionService = tourExecutionService;
             _tourService = tourService;
             _tourTokenService = tourTokenService;
         }
+
 
         [HttpGet]
         [Route("purchasedtours")]

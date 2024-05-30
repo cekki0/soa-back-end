@@ -13,10 +13,13 @@ public class ClubInvitationController : BaseApiController
 {
     private readonly IClubInvitationService _clubInvitationService;
 
-    public ClubInvitationController(IClubInvitationService clubInvitationService)
+    public ClubInvitationController(
+        IClubInvitationService clubInvitationService,
+        ILogger<ClubInvitationController> logger) : base(logger)
     {
         _clubInvitationService = clubInvitationService;
     }
+
 
     [HttpPost("byUsername")]
     public ActionResult<ClubInvitationCreatedDto> Invite([FromBody] ClubInvitationWithUsernameDto dto)

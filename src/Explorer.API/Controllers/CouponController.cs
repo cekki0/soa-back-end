@@ -19,10 +19,13 @@ namespace Explorer.API.Controllers
     {
         private readonly ICouponService _couponService;
 
-        public CouponController(ICouponService couponService)
+        public CouponController(
+            ICouponService couponService,
+            ILogger<CouponController> logger) : base(logger)
         {
             _couponService = couponService;
         }
+
         [HttpPost]
         public ActionResult<CouponResponseDto> Create([FromBody] CouponCreateDto coupon)
         {

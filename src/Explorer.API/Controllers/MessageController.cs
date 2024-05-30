@@ -15,7 +15,7 @@ namespace Explorer.API.Controllers
         private readonly IMessageService _messageService;
 
 
-        public MessageController(IUserService userService, IMessageService messageService)
+        public MessageController(ILogger<MessageController> logger, IUserService userService, IMessageService messageService):base(logger)
         {
             _userService = userService;
             _messageService= messageService;
