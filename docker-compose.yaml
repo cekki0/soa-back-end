@@ -1,160 +1,160 @@
 version: "3.9"
 
 services:
-  postgres:
-    image: postgres:16.2-alpine
-    ports:
-      - 5433:5432
-    volumes:
-      - explorer_data:/var/lib/postgresql/data
-      - ./explorer/src/explorer-db.sql:/docker-entrypoint-initdb.d/init.sql
-    environment:
-      - POSTGRES_PASSWORD=root
-      - POSTGRES_USER=postgres
-      - POSTGRES_DB=explorer
+    postgres:
+        image: postgres:16.2-alpine
+        ports:
+            - 5433:5432
+        volumes:
+            - explorer_data:/var/lib/postgresql/data
+            - ./explorer/src/explorer-db.sql:/docker-entrypoint-initdb.d/init.sql
+        environment:
+            - POSTGRES_PASSWORD=root
+            - POSTGRES_USER=postgres
+            - POSTGRES_DB=explorer
 
-  angular:
-    build: ../soa-front-end/Explorer
-    ports:
-      - "4200:80"
+    angular:
+        build: ../soa-front-end/Explorer
+        ports:
+            - "4200:80"
 
-  explorer:
-    volumes:
-      - ./explorer/src:/home/explorer/src
-    build: ./explorer
-    restart: on-failure
-    ports:
-      - "44333:80"
-    environment:
-      DATABASE_HOST: postgres
-      DATABASE_PORT: 5432
-      DATABASE_PASSWORD: root
-      DATABASE_USER: postgres
-      DATABASE_SCHEMA: explorer
-      ENCOUNTER_HOST: encounter
-      ENCOUNTER_PORT: 8089
-      TOUR_HOST: tour
-      TOUR_PORT: 8080
-      FOLLOW_HOST: follow
-      FOLLOW_PORT: 8089
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: "localhost:24224"
-        tag: "docker.explorer"
-    depends_on:
-      - postgres
+    explorer:
+        volumes:
+            - ./explorer/src:/home/explorer/src
+        build: ./explorer
+        restart: on-failure
+        ports:
+            - "44333:80"
+        environment:
+            DATABASE_HOST: postgres
+            DATABASE_PORT: 5432
+            DATABASE_PASSWORD: root
+            DATABASE_USER: postgres
+            DATABASE_SCHEMA: explorer
+            ENCOUNTER_HOST: encounter
+            ENCOUNTER_PORT: 8089
+            TOUR_HOST: tour
+            TOUR_PORT: 8080
+            FOLLOW_HOST: follow
+            FOLLOW_PORT: 8089
+        logging:
+            driver: "fluentd"
+            options:
+                fluentd-address: "localhost:24224"
+                tag: "docker.explorer"
+        depends_on:
+            - postgres
 
-  encounter:
-    build: ./encounter
-    environment:
-      - PORT=8089
-      - DB_USER=postgres
-      - DB_PASSWORD=root
-      - DB_PORT=5432
-      - DB_DATABASE=explorer
-      - DB_HOST=postgres
-    volumes:
-      - ./encounter:/home/node/app
-    depends_on:
-      - postgres
+    encounter:
+        build: ./encounter
+        environment:
+            - PORT=8089
+            - DB_USER=postgres
+            - DB_PASSWORD=root
+            - DB_PORT=5432
+            - DB_DATABASE=explorer
+            - DB_HOST=postgres
+        volumes:
+            - ./encounter:/home/node/app
+        depends_on:
+            - postgres
 
-  follow:
-    build: ./follow
-    environment:
-      - PORT=8089
-      - NEO4J_DATABASE_PASSWORD=12345678
-      - NEO4J_DATABASE_USERNAME=neo4j
-      - NEO4J_DATABASE_URL=bolt://neo4j:7687
-    volumes:
-      - ./follow:/home/node/app
-    depends_on:
-      - neo4j
-    ports:
-      - 8089:8089
+    follow:
+        build: ./follow
+        environment:
+            - PORT=8089
+            - NEO4J_DATABASE_PASSWORD=12345678
+            - NEO4J_DATABASE_USERNAME=neo4j
+            - NEO4J_DATABASE_URL=bolt://neo4j:7687
+        volumes:
+            - ./follow:/home/node/app
+        depends_on:
+            - neo4j
+        ports:
+            - 8089:8089
 
-  neo4j:
-    container_name: neo4j
-    image: neo4j:latest
-    ports:
-      - 7474:7474
-      - 7687:7687
-    environment:
-      - NEO4J_AUTH=neo4j/12345678
-      - NEO4J_apoc_export_file_enabled=true
-      - NEO4J_apoc_import_file_enabled=true
-      - NEO4J_apoc_import_file_use__neo4j__config=true
-    volumes:
-      - neo4j_db:/data
+    neo4j:
+        container_name: neo4j
+        image: neo4j:latest
+        ports:
+            - 7474:7474
+            - 7687:7687
+        environment:
+            - NEO4J_AUTH=neo4j/12345678
+            - NEO4J_apoc_export_file_enabled=true
+            - NEO4J_apoc_import_file_enabled=true
+            - NEO4J_apoc_import_file_use__neo4j__config=true
+        volumes:
+            - neo4j_db:/data
 
-  tour:
-    build: ./tour
-    environment:
-      - DB_USER=postgres
-      - DB_PASSWORD=root
-      - DB_PORT=5432
-      - DB_DATABASE=explorer
-      - DB_HOST=postgres
-    depends_on:
-      - postgres
+    tour:
+        build: ./tour
+        environment:
+            - DB_USER=postgres
+            - DB_PASSWORD=root
+            - DB_PORT=5432
+            - DB_DATABASE=explorer
+            - DB_HOST=postgres
+        depends_on:
+            - postgres
 
-  jaeger:
-    image: jaegertracing/all-in-one:latest
-    ports:
-      - "5775:5775/udp"
-      - "6831:6831/udp"
-      - "6832:6832/udp"
-      - "5778:5778"
-      - "16686:16686"
-      - "14268:14268"
-      - "14250:14250"
-      - "9411:9411"
+    jaeger:
+        image: jaegertracing/all-in-one:latest
+        ports:
+            - "5775:5775/udp"
+            - "6831:6831/udp"
+            - "6832:6832/udp"
+            - "5778:5778"
+            - "16686:16686"
+            - "14268:14268"
+            - "14250:14250"
+            - "9411:9411"
 
-  otel-collector:
-    image: otel/opentelemetry-collector-contrib:latest
-    command: ["--config=/etc/otel-collector-config.yaml"]
-    volumes:
-      - ./config/otel-collector-config.yaml:/etc/otel-collector-config.yaml
-    ports:
-      - "4317:4317"
-      - "55681:55681"
-      - "55682:55682"
+    otel-collector:
+        image: otel/opentelemetry-collector-contrib:latest
+        command: [ "--config=/etc/otel-collector-config.yaml" ]
+        volumes:
+            - ./config/otel-collector-config.yaml:/etc/otel-collector-config.yaml
+        ports:
+            - "4317:4317"
+            - "55681:55681"
+            - "55682:55682"
 
-  grafana:
-    image: grafana/grafana:8.5.3
-    ports:
-      - "3000:3000"
-    environment:
-      GF_RENDERING_SERVER_URL: http://renderer:8081/render
-      GF_RENDERING_CALLBACK_URL: http://grafana:3000/
-      GF_LOG_FILTERS: rendering:debug
-    volumes:
-      - grafana:/var/lib/grafana
-      - ./grafana/dashboards:/var/lib/grafana/dashboards
-      - ./grafana/provisioning:/etc/grafana/provisioning
+    grafana:
+        image: grafana/grafana:8.5.3
+        ports:
+            - "3000:3000"
+        environment:
+            GF_RENDERING_SERVER_URL: http://renderer:8081/render
+            GF_RENDERING_CALLBACK_URL: http://grafana:3000/
+            GF_LOG_FILTERS: rendering:debug
+        volumes:
+            - grafana:/var/lib/grafana
+            - ./grafana/dashboards:/var/lib/grafana/dashboards
+            - ./grafana/provisioning:/etc/grafana/provisioning
 
-  loki:
-    image: grafana/loki:main-5206e3a
+    loki:
+        image: grafana/loki:main-5206e3a
 
-  fluent-bit:
-    image: grafana/fluent-bit-plugin-loki:main-5206e3a-amd64
-    environment:
-      - LOKI_URL=http://loki:3100/loki/api/v1/push
-    volumes:
-      - ./fluent-bit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
-    ports:
-      - "24224:24224"
-      - "24224:24224/udp"
+    fluent-bit:
+        image: grafana/fluent-bit-plugin-loki:main-5206e3a-amd64
+        environment:
+            - LOKI_URL=http://loki:3100/loki/api/v1/push
+        volumes:
+            - ./fluent-bit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
+        ports:
+            - "24224:24224"
+            - "24224:24224/udp"
 
-  renderer:
-    image: grafana/grafana-image-renderer:3.4.2
-    environment:
-      ENABLE_METRICS: "true"
+    renderer:
+        image: grafana/grafana-image-renderer:3.4.2
+        environment:
+            ENABLE_METRICS: "true"
 
 volumes:
-  grafana:
-    name: grafana
-  explorer_data:
-    driver: local
-  neo4j_db:
-    driver: local
+    grafana:
+        name: grafana
+    explorer_data:
+        driver: local
+    neo4j_db:
+        driver: local
