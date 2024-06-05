@@ -168,7 +168,5 @@ volumes:
         driver: local
     neo4j_db:
         driver: local
-    grafana-data:
-        driver: local
     prometheus-data:
         driver: local
